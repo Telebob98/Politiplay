@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politiplay — A Letter to Friends and Family</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #26215C;
+  --purple: #7F77DD;
+  --purple-m: #534AB7;
+  --purple-l: #EEEDFE;
+  --teal:   #1D9E75;
+  --ink:    #1a1918;
+  --ink2:   #3d3c38;
+  --ink3:   #7a7870;
+  --paper:  #FAF8F4;
+  --paper2: #F2EFE8;
+  --rule:   #DDD9CE;
+  --serif:  'Cormorant Garamond', Georgia, serif;
+  --sans:   'DM Sans', Helvetica, sans-serif;
+  --mono:   'DM Mono', monospace;
+}
+
+html { font-size: 16px; }
+body {
+  font-family: var(--sans);
+  background: var(--paper2);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 48px 24px 80px;
+}
+
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--paper);
+  border: 0.5px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+.letterhead {
+  background: var(--navy);
+  padding: 40px 56px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.letterhead::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(127,119,221,0.06) 39px, rgba(127,119,221,0.06) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(127,119,221,0.06) 39px, rgba(127,119,221,0.06) 40px);
+  pointer-events: none;
+}
+.letterhead-inner { position: relative; display: flex; align-items: flex-start; justify-content: space-between; }
+.logo-block {}
+.logo { font-family: var(--serif); font-size: 42px; font-weight: 400; color: #fff; letter-spacing: -0.5px; line-height: 1; margin-bottom: 4px; }
+.logo span { color: var(--purple); }
+.logo-url { font-family: var(--mono); font-size: 10px; color: #3C3489; letter-spacing: 0.1em; }
+.letterhead-date { text-align: right; }
+.date-label { font-family: var(--mono); font-size: 9px; color: #3C3489; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+.date-val { font-family: var(--serif); font-size: 16px; color: #AFA9EC; font-style: italic; }
+
+/* ── RULE ── */
+.rule { height: 3px; background: var(--purple); }
+.rule-thin { height: 0.5px; background: var(--rule); }
+
+/* ── LETTER BODY ── */
+.letter { padding: 48px 56px 56px; }
+
+.salutation {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--navy);
+  margin-bottom: 32px;
+  line-height: 1.2;
+}
+.salutation em { color: var(--purple); font-style: italic; }
+
+p {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--ink2);
+  margin-bottom: 22px;
+}
+p strong {
+  font-weight: 500;
+  color: var(--ink);
+}
+p em {
+  font-style: italic;
+  color: var(--navy);
+}
+
+/* ── PULL QUOTE ── */
+.pull {
+  border-left: 3px solid var(--purple);
+  padding: 14px 24px;
+  margin: 32px 0;
+  background: var(--purple-l);
+  border-radius: 0 4px 4px 0;
+}
+.pull p {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--navy);
+  font-style: italic;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+
+/* ── NUMBERS TABLE ── */
+.numbers-block {
+  background: var(--paper2);
+  border: 0.5px solid var(--rule);
+  border-radius: 4px;
+  padding: 24px 28px;
+  margin: 32px 0;
+}
+.numbers-title {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 16px;
+}
+.num-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--rule);
+  font-family: var(--serif);
+}
+.num-row:last-child { border-bottom: none; }
+.num-label { font-size: 16px; font-weight: 300; color: var(--ink2); }
+.num-val { font-size: 16px; font-weight: 500; color: var(--navy); font-family: var(--mono); font-size: 13px; }
+.num-row.total .num-label { font-weight: 500; color: var(--ink); }
+.num-row.total .num-val { color: var(--purple); }
+
+/* ── PILLS ── */
+.pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 24px 0; }
+.pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+}
+.p-navy   { background: var(--navy); color: #AFA9EC; }
+.p-purple { background: var(--purple-l); color: var(--purple-m); border: 0.5px solid #CECBF6; }
+.p-teal   { background: #E1F5EE; color: #085041; border: 0.5px solid #9FE1CB; }
+.p-amber  { background: #FAEEDA; color: #854F0B; border: 0.5px solid #FAC775; }
+
+/* ── SIGN-OFF ── */
+.signoff {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 0.5px solid var(--rule);
+}
+.signoff-close {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 300;
+  color: var(--ink2);
+  margin-bottom: 32px;
+  font-style: italic;
+}
+.sig-name {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--navy);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.sig-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink3);
+  letter-spacing: 0.1em;
+  margin-bottom: 2px;
+}
+.sig-contact {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--purple-m);
+}
+
+/* ── FOOTER ── */
+.footer {
+  background: var(--paper2);
+  border-top: 0.5px solid var(--rule);
+  padding: 20px 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo { font-family: var(--serif); font-size: 14px; color: var(--ink3); }
+.footer-logo span { color: var(--purple); }
+.footer-disclaimer { font-size: 10px; color: var(--ink3); font-style: italic; max-width: 340px; text-align: right; line-height: 1.5; font-family: var(--sans); }
+
+@media print {
+  body { background: white; padding: 0; }
+  .page { border: none; border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="letterhead">
+    <div class="letterhead-inner">
+      <div class="logo-block">
+        <div class="logo">Politi<span>play</span></div>
+        <div class="logo-url">politiplay.net</div>
+      </div>
+      <div class="letterhead-date">
+        <div class="date-label">Date</div>
+        <div class="date-val">March 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="letter">
+
+    <div class="salutation">Dear <em>Friends and Family,</em></div>
+
+    <p>OK, I've been working on something I can't stop thinking about, and now I have to share it. As people who've put up with me through the years, I'm asking you to hear me out again. I think this is a damn good idea and I hope you agree. If you don't, you're crazy — but that's another matter entirely.</p>
+
+    <p>It's called <strong>Politiplay</strong>. Fantasy football for global politics. You draft 11 real-world public figures onto your squad — presidents, senators, chaos agents, tech billionaires — and score points when they make news. Elections. Legislation. Scandals. Viral moments. Weekly contests called Sweeps. We treat life like a game we play anyway — Politiplay just keeps score.</p>
+
+    <div class="pull">
+      <p>"Pick the ones who matter. Win the week. Prizes, praise, and the knowledge that you know what the hell is going on."</p>
+    </div>
+
+    <p>If you follow fantasy sports, you already understand the mechanics. If you're a news junkie or politically aware, this game was made for you. If you're both — you've been waiting for this without knowing it.</p>
+
+    <p>And underneath the game is something more serious: a crowd-sourced political intelligence platform. Every draft pick and Captain selection is a data point. At scale, that data — who the public trusts, who they're backing, who they drop when the news turns — is worth real money to pollsters, newsrooms, and researchers. The game drives the data. The data drives the business.</p>
+
+    <div class="numbers-block">
+      <div class="numbers-title">Where the money goes</div>
+      <div class="num-row"><span class="num-label">Developer — MVP build (Upwork)</span><span class="num-val">$2,000 – $3,500</span></div>
+      <div class="num-row"><span class="num-label">Hosting and infrastructure</span><span class="num-val">$200 – $400</span></div>
+      <div class="num-row"><span class="num-label">Domain and tooling</span><span class="num-val">$50 – $100</span></div>
+      <div class="num-row"><span class="num-label">Contingency</span><span class="num-val">$500</span></div>
+      <div class="num-row total"><span class="num-label">Total raise</span><span class="num-val">$3,000 – $5,000</span></div>
+    </div>
+
+    <p>I could fund this myself. I don't want to. Spreading the risk across people I trust in bite-sized chunks feels smarter — and it means the people who believed early get to share in what comes next. If it doesn't work out, nobody gets hurt. Every dollar goes to development. This is not a scheme for Bob to get a few bucks from his friends. Once live, the whole platform runs on <strong>$95 a month</strong>.</p>
+
+    <p>Early backers get <em>founder terms</em> — worked out individually, fairly, with proper paperwork. There's a Phase 2 on the horizon too: cash prize competitions, DraftKings applied to politics. Not a promise. A direction worth knowing about.</p>
+
+    <p>This is a shot in the dark. The upside is vast enough that not trying would be the real mistake. So I'm trying. Join me into the unknown — or don't, and know I love you either way and you'll still be getting my calls at inconvenient hours.</p>
+
+    <p>Thank you for being my pal. Give me thirty minutes. I think you'll be glad you did.</p>
+
+    <div class="signoff">
+      <div class="signoff-close">With love, optimism, and at least some idea of what I'm doing,</div>
+      <div class="sig-name">Bob</div>
+      <div class="sig-title">Founder · Politiplay.net<br><a href="https://politiplaytiinysite.tiiny.site/" style="color:#7F77DD;font-size:10px;">politiplaytiinysite.tiiny.site</a></div>
+      <div class="sig-contact">[<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a1d8ced4d3e1c4ccc0c8cd8fc2cecc">[email&#160;protected]</a>] &nbsp;·&nbsp; 1 512 761 5324</div>
+    

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politiplay — Co-Founder One-Pager</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #26215C;
+  --purple: #7F77DD;
+  --purple-mid: #534AB7;
+  --purple-light: #EEEDFE;
+  --teal:   #1D9E75;
+  --teal-light: #E1F5EE;
+  --coral:  #D85A30;
+  --coral-light: #FAECE7;
+  --amber:  #EF9F27;
+  --amber-light: #FAEEDA;
+  --ink:    #1a1918;
+  --ink-mid: #3d3c38;
+  --ink-muted: #7a7870;
+  --ink-faint: #c8c6be;
+  --paper:  #F7F5EF;
+  --paper-dark: #EDEBE3;
+  --white:  #ffffff;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', Helvetica, sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+html { font-size: 15px; }
+body {
+  font-family: var(--sans);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ─── HEADER ─── */
+.header {
+  background: var(--navy);
+  padding: 52px 56px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 80% 50%, rgba(127,119,221,0.12) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(83,74,183,0.08) 39px, rgba(83,74,183,0.08) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(83,74,183,0.08) 39px, rgba(83,74,183,0.08) 40px);
+  pointer-events: none;
+}
+
+.header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 36px; position: relative; }
+.logo-block {}
+.logo { font-family: var(--serif); font-size: 28px; color: var(--white); letter-spacing: -0.01em; margin-bottom: 4px; }
+.logo span { color: var(--purple); }
+.logo-sub { font-size: 11px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; color: #534AB7; }
+.doc-tag { text-align: right; }
+.doc-tag-label { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: #534AB7; margin-bottom: 4px; }
+.doc-tag-val { font-family: var(--mono); font-size: 12px; color: #7F77DD; }
+
+.header-body { position: relative; }
+.headline { font-family: var(--serif); font-size: 42px; color: var(--white); line-height: 1.12; margin-bottom: 16px; max-width: 560px; }
+.headline em { color: var(--purple); font-style: normal; }
+.tagline { font-size: 15px; color: #AFA9EC; line-height: 1.7; max-width: 520px; margin-bottom: 24px; font-weight: 300; }
+.tagline em { color: #CECBF6; font-style: italic; }
+
+.header-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.hpill { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 99px; }
+.hp-purple { background: #3C3489; color: #CECBF6; }
+.hp-teal   { background: #085041; color: #9FE1CB; }
+.hp-amber  { background: #633806; color: #FAC775; }
+.hp-plain  { background: #1a1740; color: #7F77DD; border: 0.5px solid #3C3489; }
+
+/* ─── TICKER ─── */
+.ticker {
+  background: #12102e;
+  border-top: 0.5px solid #3C3489;
+  padding: 9px 56px;
+  display: flex;
+  gap: 0;
+  align-items: center;
+}
+.ticker-label { font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #3C3489; margin-right: 20px; font-family: var(--mono); white-space: nowrap; }
+.ticker-items { display: flex; gap: 20px; overflow: hidden; }
+.tick { font-size: 11px; color: #7F77DD; display: flex; gap: 5px; align-items: center; white-space: nowrap; font-family: var(--mono); }
+.tick-pos { color: #5DCAA5; }
+.tick-neg { color: #F0997B; }
+.tick-sep { width: 3px; height: 3px; border-radius: 50%; background: #3C3489; flex-shrink: 0; }
+
+/* ─── BODY ─── */
+.body { padding: 0 56px; }
+
+/* ─── SECTION ─── */
+.section { padding: 36px 0; border-bottom: 0.5px solid var(--ink-faint); }
+.section:last-child { border-bottom: none; }
+.section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+.section-num { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+.section-title { font-family: var(--serif); font-size: 20px; color: var(--ink); }
+
+/* ─── TWO-COL ─── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ─── CONCEPT ─── */
+.concept-block { background: var(--white); border: 0.5px solid var(--ink-faint); border-radius: 10px; padding: 20px 22px; }
+.concept-block p { font-size: 13px; color: var(--ink-mid); line-height: 1.7; }
+.concept-block p + p { margin-top: 10px; }
+.concept-block strong { color: var(--ink); font-weight: 500; }
+
+.pitch-stat { border-left: 2px solid var(--purple); padding-left: 14px; margin-bottom: 16px; }
+.pitch-stat:last-child { margin-bottom: 0; }
+.pitch-stat-val { font-family: var(--serif); font-size: 22px; color: var(--navy); margin-bottom: 2px; }
+.pitch-stat-lbl { font-size: 12px; color: var(--ink-muted); line-height: 1.5; }
+
+/* ─── MECHANICS ─── */
+.step-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.step-card { background: var(--white); border: 0.5px solid var(--ink-faint); border-radius: 10px; padding: 18px 18px 16px; }
+.step-n { font-family: var(--mono); font-size: 10px; color: var(--purple); font-weight: 500; margin-bottom: 8px; letter-spacing: 0.08em; }
+.step-hed { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 6px; }
+.step-body { font-size: 12px; color: var(--ink-muted); line-height: 1.6; }
+.step-score { display: inline-block; margin-top: 10px; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; font-family: var(--mono); }
+.ss-pos { background: var(--teal-light); color: #0F6E56; }
+.ss-neg { background: var(--coral-light); color: #993C1D; }
+
+/* ─── POSITIONS ─── */
+.pos-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.pos-chip { border-radius: 8px; padding: 12px 10px; text-align: center; }
+.pos-chip-name { font-size: 11px; font-weight: 500; margin-bottom: 2px; }
+.pos-chip-mult { font-size: 10px; font-family: var(--mono); }
+.p-purple { background: var(--purple-light); }
+.p-teal   { background: var(--teal-light); }
+.p-blue   { background: #E6F1FB; }
+.p-coral  { background: var(--coral-light); }
+.p-pink   { background: #FBEAF0; }
+
+/* ─── SCORING SAMPLE ─── */
+.score-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.score-table th { text-align: left; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); padding: 0 10px 8px 0; border-bottom: 0.5px solid var(--ink-faint); }
+.score-table td { padding: 7px 10px 7px 0; border-bottom: 0.5px solid var(--paper-dark); color: var(--ink-mid); vertical-align: middle; }
+.score-table tr:last-child td { border-bottom: none; }
+.pts-pos { color: var(--teal); font-weight: 500; font-family: var(--mono); }
+.pts-neg { color: var(--coral); font-weight: 500; font-family: var(--mono); }
+.tier-badge { display: inline-block; font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 3px; font-family: var(--mono); }
+.t1 { background: var(--amber-light); color: #854F0B; }
+.t2 { background: var(--coral-light); color: #993C1D; }
+.t3 { background: #FCEBEB; color: #A32D2D; }
+
+/* ─── REGIONS ─── */
+.region-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.region-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--white); border: 0.5px solid var(--ink-faint); border-radius: 8px; }
+.region-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.region-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+.region-sub { font-size: 11px; color: var(--ink-muted); }
+.region-tag { margin-left: auto; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 3px; font-family: var(--mono); white-space: nowrap; }
+.rt-d { background: var(--purple-light); color: var(--purple-mid); }
+.rt-c { background: var(--teal-light); color: #0F6E56; }
+.rt-g { background: var(--navy); color: #AFA9EC; }
+.rt-p { background: var(--teal-light); color: #085041; border: 0.5px solid var(--teal); }
+
+/* ─── DATA / B2B ─── */
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.data-item { background: var(--white); border: 0.5px solid var(--ink-faint); border-radius: 8px; padding: 14px 16px; display: flex; gap: 10px; }
+.data-code { font-family: var(--mono); font-size: 10px; color: var(--purple); background: var(--purple-light); padding: 2px 6px; border-radius: 3px; height: fit-content; flex-shrink: 0; margin-top: 1px; }
+.data-hed { font-size: 12px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+.data-sub { font-size: 11px; color: var(--ink-muted); line-height: 1.5; }
+
+/* ─── STACK ─── */
+.stack-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.stack-chip { font-family: var(--mono); font-size: 11px; background: var(--paper-dark); color: var(--ink-mid); padding: 4px 10px; border-radius: 4px; border: 0.5px solid var(--ink-faint); }
+.stack-note { font-size: 12px; color: var(--ink-muted); margin-top: 12px; line-height: 1.6; }
+
+/* ─── LOOKING FOR ─── */
+.lf-list { list-style: none; }
+.lf-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--paper-dark); font-size: 13px; color: var(--ink-mid); line-height: 1.55; }
+.lf-item:last-child { border-bottom: none; }
+.lf-bullet { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 7px; }
+.lf-item strong { color: var(--ink); font-weight: 500; }
+
+/* ─── PHASE ─── */
+.phase-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.phase-card { border-radius: 10px; padding: 18px 20px; }
+.ph-1 { background: var(--white); border: 0.5px solid var(--ink-faint); }
+.ph-2 { background: var(--navy); }
+.phase-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; font-family: var(--mono); }
+.pl-1 { color: var(--ink-muted); }
+.pl-2 { color: #534AB7; }
+.phase-hed { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+.ph-1 .phase-hed { color: var(--ink); }
+.ph-2 .phase-hed { color: var(--white); }
+.phase-body { font-size: 12px; line-height: 1.6; }
+.ph-1 .phase-body { color: var(--ink-muted); }
+.ph-2 .phase-body { color: #AFA9EC; }
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--navy);
+  padding: 28px 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0;
+}
+.footer-logo { font-family: var(--serif); font-size: 16px; color: var(--white); }
+.footer-logo span { color: var(--purple); }
+.footer-contact { font-size: 12px; color: #7F77DD; font-family: var(--mono); }
+.footer-note { font-size: 11px; color: #534AB7; font-style: italic; }
+
+@media print {
+  body { max-width: 100%; }
+  .header::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-top">
+    <div class="logo-block">
+      <div class="logo">Politi<span>play</span></div>
+      <div class="logo-sub">politiplay.net</div>
+    </div>
+    <div class="doc-tag">
+      <div class="doc-tag-label">Co-founder brief</div>
+      <div class="doc-tag-val">v1.4 · March 2026</div>
+    </div>
+  </div>
+  <div class="header-body">
+    <div class="headline">Pick the ones<br>who <em>matter</em>.<br>Win the week.</div>
+    <div class="tagline">11 leaders, spokespeople, and chaos agents. Score when they make news.<br><em>Prizes, praise, and the knowledge that you know what the hell is going on.</em></div>
+    <div class="header-pills">
+      <span class="hpill hp-purple">Weekly Sweep winner</span>
+      <span class="hpill hp-teal">Double Sweep glory</span>
+      <span class="hpill hp-amber">Bragging rights</span>
+      <span class="hpill hp-plain">+ a teddy bear</span>
+    </div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-label">Live · Week 14</div>
+  <div class="ticker-items">
+    <div class="tick"><div class="tick-sep"></div>Lagarde <span class="tick-pos">+17</span></div>
+    <div class="tick"><div class="tick-sep"></div>Musk <span class="tick-neg">−12</span></div>
+    <div class="tick"><div class="tick-sep"></div>Modi <span class="tick-pos">+20</span></div>
+    <div class="tick"><div class="tick-sep"></div>Milei <span class="tick-neg">−25</span></div>
+    <div class="tick"><div class="tick-sep"></div>Starmer <span class="tick-pos">+8</span></div>
+    <div class="tick"><div class="tick-sep"></div>Guterres <span class="tick-pos">+15</span></div>
+    <div class="tick"><div class="tick-sep"></div>Scholz <span class="tick-neg">−8</span></div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- 01 CONCEPT -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">The concept</span>
+    </div>
+    <div class="two-col">
+      <div class="concept-block">
+        <p>Politiplay is a <strong>fantasy politics league</strong> — draft 11 real-world public figures onto your squad, earn points when they make news, win your weekly Sweep. Modeled on the mechanics of fantasy football, designed with the gravitas of global affairs.</p>
+        <p>A <strong>game on the surface</strong>. A crowd-sourced political intelligence platform underneath. The game drives the data. The data drives the business.</p>
+        <p>Every draft pick, waiver move, and Captain selection is a data signal. At scale, Politiplay generates a political intelligence dataset that is <strong>genuinely valuable</strong> to pollsters, newsrooms, campaign staff, and researchers — a B2B intelligence layer built on top of a consumer game.</p>
+      </div>
+      <div>
+        <div class="pitch-stat">
+          <div class="pitch-stat-val">~1,000</div>
+          <div class="pitch-stat-lbl">Draftable public figures at launch — presidents, senators, activists, tech billionaires, Nobel laureates</div>
+        </div>
+        <div class="pitch-stat">
+          <div class="pitch-stat-val">7</div>
+          <div class="pitch-stat-lbl">Independent data feeds scoring events automatically — GovInfo, Hansard, EU Parliament, GDELT, Reuters/AP, YouGov, Wikidata</div>
+        </div>
+        <div class="pitch-stat">
+          <div class="pitch-stat-val">~$95/mo</div>
+          <div class="pitch-stat-lbl">Estimated infrastructure cost at MVP launch on current stack</div>
+        </div>
+        <div class="pitch-stat">
+          <div class="pitch-stat-val">Phase 2</div>
+          <div class="pitch-stat-lbl">Cash prize competitive layer, offshore jurisdiction — DraftKings applied to politics, once platform and data credibility are established</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 02 MECHANICS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">How it works</span>
+    </div>
+    <div class="step-row" style="margin-bottom: 20px;">
+      <div class="step-card">
+        <div class="step-n">STEP 01</div>
+        <div class="step-hed">Draft your squad</div>
+        <div class="step-body">Pick 11 public figures across 5 position types. One Captain scores 2×. Two Wildcards — chaos agents — score 1.5×. No bench: all 11 score every week.</div>
+        <span class="step-score ss-pos">Captain 2× · Wildcard 1.5×</span>
+      </div>
+      <div class="step-card">
+        <div class="step-n">STEP 02</div>
+        <div class="step-hed">They make news</div>
+        <div class="step-body">Election wins, legislation passed, treaties signed, approval swings, scandals, indictments. Seven independent feeds score events automatically. No predictions required — just good picks.</div>
+        <span class="step-score ss-neg">Indictment −25 · Scandal −18</span>
+      </div>
+      <div class="step-card">
+        <div class="step-n">STEP 03</div>
+        <div class="step-hed">Win the Sweep</div>
+        <div class="step-body">Lineups lock Monday. Events score live Mon–Fri. Winner announced Sunday. Every player competes in their regional league and the global board simultaneously.</div>
+        <span class="step-score ss-pos">Double Sweep = rarest win</span>
+      </div>
+    </div>
+
+    <div style="margin-bottom: 14px;">
+      <div style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px;">Position types</div>
+      <div class="pos-row">
+        <div class="pos-chip p-purple"><div class="pos-chip-name" style="color:#534AB7;">Head of state</div><div class="pos-chip-mult" style="color:#7F77DD;">1× · 2 slots</div></div>
+        <div class="pos-chip p-teal"><div class="pos-chip-name" style="color:#0F6E56;">Legislator</div><div class="pos-chip-mult" style="color:#1D9E75;">1× · 2 slots</div></div>
+        <div class="pos-chip p-blue"><div class="pos-chip-name" style="color:#185FA5;">Opposition</div><div class="pos-chip-mult" style="color:#378ADD;">1× · 2 slots</div></div>
+        <div class="pos-chip p-coral"><div class="pos-chip-name" style="color:#993C1D;">World body</div><div class="pos-chip-mult" style="color:#D85A30;">1×+ · 1 slot</div></div>
+        <div class="pos-chip p-pink"><div class="pos-chip-name" style="color:#993556;">Wildcard</div><div class="pos-chip-mult" style="color:#D4537E;">1.5× · 2 slots</div></div>
+      </div>
+    </div>
+
+    <div style="font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px;">Scoring sample</div>
+    <table class="score-table">
+      <thead><tr><th>Event</th><th>Head of state</th><th>Wildcard</th><th>Tier</th></tr></thead>
+      <tbody>
+        <tr><td>Election win</td><td class="pts-pos">+30</td><td class="pts-pos">+20</td><td><span class="tier-badge t1">BONUS</span></td></tr>
+        <tr><td>Major policy win</td><td class="pts-pos">+20</td><td class="pts-pos">+15</td><td>—</td></tr>
+        <tr><td>Approval rating +3pts+</td><td class="pts-pos">+8</td><td class="pts-pos">+5</td><td>—</td></tr>
+        <tr><td>Scandal breaks</td><td class="pts-neg">−18</td><td class="pts-neg">−27</td><td><span class="tier-badge t2">TIER 2</span></td></tr>
+        <tr><td>Criminal indictment</td><td class="pts-neg">−25</td><td class="pts-neg">−38</td><td><span class="tier-badge t3">TIER 3</span></td></tr>
+        <tr><td>Forced resignation</td><td class="pts-neg">−30</td><td class="pts-neg">−45</td><td><span class="tier-badge t3">TIER 3</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 03 REGIONS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Regions + leagues</span>
+    </div>
+    <div class="region-list">
+      <div class="region-item"><div class="region-dot" style="background:#7F77DD;"></div><div><div class="region-name">USA</div><div class="region-sub">Full Congress · Governors · Cabinet · Supreme Court</div></div><span class="region-tag rt-d">700+ figures</span></div>
+      <div class="region-item"><div class="region-dot" style="background:#7F77DD;"></div><div><div class="region-name">EU + UK</div><div class="region-sub">27 member states · Westminster · ECB</div></div><span class="region-tag rt-d">220+ figures</span></div>
+      <div class="region-item"><div class="region-dot" style="background:#1D9E75;"></div><div><div class="region-name">Asia</div><div class="region-sub">India · China · Japan · SE Asia · Australia</div></div><span class="region-tag rt-c">80 figures</span></div>
+      <div class="region-item"><div class="region-dot" style="background:#D85A30;"></div><div><div class="region-name">Latin America</div><div class="region-sub">Mexico · Brazil · Argentina · Colombia</div></div><span class="region-tag rt-c">60 figures</span></div>
+      <div class="region-item" style="background:#1a1740; border-color:#3C3489;"><div class="region-dot" style="background:#7F77DD;"></div><div><div class="region-name" style="color:#CECBF6;">Global</div><div class="region-sub" style="color:#7F77DD;">Draft anyone, from anywhere</div></div><span class="region-tag rt-g">Open</span></div>
+      <div class="region-item" style="border-color:#1D9E75;"><div class="region-dot" style="background:#1D9E75;"></div><div><div class="region-name" style="color:#0F6E56;">Peace + Progress</div><div class="region-sub">NGOs · UN envoys · Nobel laureates</div></div><span class="region-tag rt-p">Alt league</span></div>
+    </div>
+    <div style="margin-top: 12px; font-size: 12px; color: var(--ink-muted); line-height: 1.6;">League types: <strong style="color:var(--ink); font-weight:500;">Global</strong> (open entry) · <strong style="color:var(--ink); font-weight:500;">Friend</strong> (invite-only, commissioner-run) · <strong style="color:var(--ink); font-weight:500;">Class</strong> (educator tier, free for students) · <strong style="color:var(--ink); font-weight:500;">Peace + Progress</strong> (impact-scoring, separate player pool)</div>
+  </div>
+
+  <!-- 04 DATA + B2B -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">The data business</span>
+    </div>
+    <div style="font-size: 13px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 18px; max-width: 640px;">Every player action is a data point. At scale, Politiplay generates a crowd-sourced political intelligence dataset. Draft patterns reveal real-time public trust. Waiver activity tracks political momentum. Captain selections measure crowd confidence. This is the B2B layer.</div>
+    <div class="data-grid">
+      <div class="data-item"><div class="data-code">API</div><div><div class="data-hed">Data API</div><div class="data-sub">Pollsters, academic institutions. Monthly/annual subscription.</div></div></div>
+      <div class="data-item"><div class="data-code">RPT</div><div><div class="data-hed">Intelligence reports</div><div class="data-sub">Media companies, campaigns, consultancies. Report licensing.</div></div></div>
+      <div class="data-item"><div class="data-code">EMB</div><div><div class="data-hed">Newsroom embed widgets</div><div class="data-sub">Digital publishers. Licensing + revenue share.</div></div></div>
+      <div class="data-item"><div class="data-code">EDU</div><div><div class="data-hed">Academic dataset access</div><div class="data-sub">Universities, think tanks. Institutional licensing.</div></div></div>
+    </div>
+  </div>
+
+  <!-- 05 TECH STACK -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Tech stack + status</span>
+    </div>
+    <div class="two-col">
+      <div>
+        <div style="font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px;">Decided stack</div>
+        <div class="stack-row">
+          <span class="stack-chip">Next.js 14</span>
+          <span class="stack-chip">Tailwind</span>
+          <span class="stack-chip">shadcn/ui</span>
+          <span class="stack-chip">Supabase/Postgres</span>
+          <span class="stack-chip">Vercel</span>
+          <span class="stack-chip">Upstash Redis</span>
+          <span class="stack-chip">Inngest</span>
+          <span class="stack-chip">Resend</span>
+          <span class="stack-chip">Cloudflare</span>
+        </div>
+        <div class="stack-note">~$95/mo at MVP. 9-table DB schema designed. 7 data pipeline feeds specified. Scoring engine architecture documented.</div>
+      </div>
+      <div>
+        <div style="font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px;">What's done</div>
+        <ul class="lf-list">
+          <li class="lf-item"><div class="lf-bullet" style="background:var(--teal);"></div><span>Full game design brief (v1.4) — scoring, mechanics, positions, penalties, regions</span></li>
+          <li class="lf-item"><div class="lf-bullet" style="background:var(--teal);"></div><span>Database schema (9 tables), pipeline architecture, stack decisions</span></li>
+          <li class="lf-item"><div class="lf-bullet" style="background:var(--teal);"></div><span>Visual identity, graphic language, landing page wireframes</span></li>
+          <li class="lf-item"><div class="lf-bullet" style="background:var(--teal);"></div><span>Monetization model — consumer tiers + B2B intelligence layer</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 PHASES -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">Roadmap</span>
+    </div>
+    <div class="phase-row">
+      <div class="phase-card ph-1">
+        <div class="phase-label pl-1">Phase 1 · Now</div>
+        <div class="phase-hed">Build the platform</div>
+        <div class="phase-body">MVP build. Player base growth. Data pipeline live. Consumer tiers launched. B2B intelligence layer established. Editorial credibility earned.</div>
+      </div>
+      <div class="phase-card ph-2">
+        <div class="phase-label pl-2">Phase 2 · Future</div>
+        <div class="phase-hed" style="color:#5DCAA5;">Cash prize competition</div>
+        <div class="phase-body">Offshore competitive layer. Cash entry, prize pools. DraftKings applied to politics. Existing player base as acquisition funnel. Legal groundwork laid in Phase 1.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 LOOKING FOR -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">What we're looking for</span>
+    </div>
+    <div class="two-col">
+      <ul class="lf-list">
+        <li class="lf-item"><div class="lf-bullet"></div><span><strong>Technical co-founder</strong> — full-stack, ideally with experience in real-time data systems, consumer apps, or sports/gaming platforms. Equity conversation.</span></li>
+        <li class="lf-item"><div class="lf-bullet"></div><span><strong>Seed capital</strong> — platform build, data pipeline, editorial capacity, initial player acquisition.</span></li>
+      </ul>
+      <ul class="lf-list">
+        <li class="lf-item"><div class="lf-bullet"></div><span><strong>Editorial advisor</strong> — political media background, to shape the scoring event taxonomy and Wildcard pool curation.</span></li>
+        <li class="lf-item"><div class="lf-bullet"></div><span><strong>B2B pilot partners</strong> — a newsroom, pollster, or research institution willing to be first data customers.</span></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-logo">Politi<span>play</span>.net</div>
+  <div class="footer-contact">politiplay.net · v1.4 · March 2026</div>
+  <div class="footer-note">The teddy bear is real.</div>
+</footer>
+
+</body>
+</html>

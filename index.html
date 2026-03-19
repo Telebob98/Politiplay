@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440, initial-scale=1.0, minimum-scale=0.5">
+<meta name="description" content="Politiplay — Fantasy politics league. Draft world leaders. Score when they make news. Win your Sweep.">
+<meta property="og:title" content="Politiplay — Fantasy Politics League">
+<meta property="og:description" content="Draft world leaders. Score when they make news. Win your Sweep.">
+<title>Politiplay — Coming Soon</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#26215C;--navy2:#1a1740;--navy3:#12102e;
+  --purple:#7F77DD;--purple-m:#534AB7;
+  --teal:#1D9E75;--coral:#D85A30;--pink:#D4537E;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',Helvetica,sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html,body{height:100%;max-height:100vh;font-family:var(--sans);background:var(--navy3);color:#AFA9EC;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(127,119,221,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(127,119,221,0.04) 1px,transparent 1px);
+  background-size:48px 48px;}
+
+/* 16:9 SHELL */
+.shell{position:relative;z-index:1;width:100vw;height:100vh;display:grid;grid-template-columns:1fr 320px;min-width:600px;}
+
+/* LEFT PANEL */
+.left{position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:16px 32px 44px 32px;overflow:hidden;height:100vh;}
+
+/* LOGO ROW */
+.logo{font-family:var(--serif);font-size:56px;color:#fff;letter-spacing:-1px;line-height:1;}
+.logo span{color:var(--purple);}
+.logo-sub{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;color:#7F77DD;text-transform:uppercase;margin-top:4px;}
+
+/* HEADLINE */
+.headline{font-family:var(--serif);font-size:clamp(28px,3.2vw,44px);color:#fff;line-height:1.1;}
+.headline em{color:var(--purple);font-style:normal;}
+
+/* TAGLINES */
+.taglines{}
+.tagline{font-size:14px;color:#AFA9EC;line-height:1.5;font-weight:300;}
+.tagline-kicker{font-family:var(--serif);font-size:14px;color:#AFA9EC;font-style:italic;margin-top:2px;opacity:0.75;}
+
+/* PILLS */
+.pill-row{display:flex;gap:5px;flex-wrap:wrap;}
+.pill{font-family:var(--mono);font-size:11px;font-weight:500;padding:4px 12px;border-radius:99px;letter-spacing:0.04em;}
+.p1{background:rgba(83,74,183,.3);color:#CECBF6;border:.5px solid rgba(127,119,221,.3);}
+.p2{background:rgba(8,80,65,.3);color:#9FE1CB;border:.5px solid rgba(29,158,117,.3);}
+.p3{background:rgba(99,56,6,.3);color:#FAC775;border:.5px solid rgba(239,159,39,.3);}
+.p4{background:rgba(83,74,183,.25);color:#CECBF6;border:.5px solid rgba(127,119,221,.5);}
+
+/* DRAFT GRID */
+.draft-section{overflow:hidden;}
+.draft-label{font-family:var(--mono);font-size:8px;letter-spacing:0.14em;color:#AFA9EC;text-transform:uppercase;margin-bottom:5px;}
+.draft-grid{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:88px 100px;gap:4px;}
+.fig-btn{background:#111125;border:.5px solid #1e1e35;border-radius:6px;padding:5px 4px;cursor:pointer;text-align:center;transition:all .15s;position:relative;height:88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
+.fig-btn:hover:not([disabled]){border-color:var(--purple);background:#18182a;}
+.fig-btn.drafted{border-color:var(--purple);background:#160c28;}
+.fig-btn[disabled]{opacity:.18;cursor:not-allowed;}
+.fig-btn.pulse{animation:scorePulse .5s ease;}
+.fig-flag{font-size:22px;margin-bottom:3px;}
+.fig-name{font-size:13px;color:#AFA9EC;line-height:1.2;font-weight:500;}
+.fig-pos{font-size:11px;font-family:var(--mono);margin-top:2px;}
+.fig-pts{font-size:12px;font-family:var(--mono);font-weight:500;margin-top:2px;}
+.fig-wc{font-size:11px;font-family:var(--mono);color:var(--pink);}
+.crown{position:absolute;top:-4px;right:-4px;width:12px;height:12px;background:var(--purple);border-radius:50%;display:none;align-items:center;justify-content:center;font-size:6px;color:#fff;}
+.fig-btn.drafted .crown{display:flex;}
+
+/* BOTTOM ROW — squad score + email side by side */
+.bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;}
+.squad-bar{background:#111125;border:.5px solid #1e1e35;border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
+.squad-lbl{font-family:var(--mono);font-size:11px;color:#AFA9EC;}
+.squad-picks{font-size:12px;color:#7F77DD;font-family:var(--mono);margin-top:2px;}
+.squad-score{font-family:var(--mono);font-size:28px;font-weight:500;color:#5DCAA5;transition:color .3s;}
+.squad-score.neg{color:#F0997B;}
+.email-section{}
+.form-lbl{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:#AFA9EC;text-transform:uppercase;margin-bottom:6px;}
+.form-row{display:flex;gap:6px;}
+.form-input{flex:1;background:rgba(127,119,221,.15);border:.5px solid rgba(127,119,221,.6);border-radius:6px;padding:10px 12px;color:#fff;font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s;min-width:0;}
+.form-input::placeholder{color:#AFA9EC;}
+.form-input:focus{border-color:var(--purple);}
+.form-btn{background:var(--purple);color:#fff;border:none;border-radius:6px;padding:10px 16px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.form-btn:hover{background:var(--purple-m);}
+.form-note{font-size:12px;color:#7F77DD;margin-top:6px;font-style:italic;}
+.success-msg{display:none;font-family:var(--mono);font-size:10px;color:#5DCAA5;letter-spacing:.06em;margin-top:6px;}
+
+/* GLOBE */
+.globe{position:absolute;top:32px;right:28px;width:clamp(180px,34%,340px);height:clamp(180px,34%,340px);pointer-events:none;z-index:0;opacity:0.85;}
+
+/* RIGHT PANEL */
+.right-panel{background:#0d0d20;border-left:.5px solid #1e1e35;display:flex;flex-direction:column;overflow:hidden;}
+.panel-header{padding:12px 14px;border-bottom:.5px solid #1e1e35;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.panel-title{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:#3C3489;text-transform:uppercase;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#5DCAA5;animation:blink 1.4s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.feed{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;}
+.feed::-webkit-scrollbar{width:2px;}
+.feed::-webkit-scrollbar-thumb{background:#1e1e35;border-radius:2px;}
+.feed-item{background:#111125;border:.5px solid #1e1e35;border-radius:7px;padding:9px;animation:feedIn .35s ease;flex-shrink:0;}
+.feed-item.penalty{border-color:#7f1d1d;background:#120808;}
+.feed-item.highlight{border-color:var(--purple);background:#160c28;}
+@keyframes feedIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.feed-time{font-family:var(--mono);font-size:8px;color:#2a2a45;margin-bottom:3px;}
+.feed-head{font-size:11px;font-weight:500;color:#f0ede8;line-height:1.3;margin-bottom:3px;}
+.feed-item.penalty .feed-head{color:#fca5a5;}
+.feed-detail{font-size:10px;color:#333;line-height:1.4;margin-bottom:4px;}
+.feed-your-score{font-family:var(--mono);font-size:9px;display:flex;justify-content:space-between;margin-top:3px;padding-top:4px;border-top:.5px solid rgba(127,119,221,.2);}
+.panel-footer{border-top:.5px solid #1e1e35;padding:10px 12px;flex-shrink:0;}
+.lb-title{font-family:var(--mono);font-size:8px;letter-spacing:.12em;color:#3C3489;text-transform:uppercase;margin-bottom:6px;}
+.lb-row{display:flex;justify-content:space-between;align-items:center;padding:4px 7px;border-radius:4px;margin-bottom:2px;font-size:10px;}
+.lb-row.you{background:#160c28;border:.5px solid var(--purple-m);}
+
+/* TICKER */
+.ticker-wrap{position:fixed;bottom:0;left:0;right:0;background:var(--navy3);border-top:1px solid rgba(127,119,221,.12);padding:6px 0;z-index:20;overflow:hidden;}
+.ticker-inner{display:flex;gap:0;white-space:nowrap;}
+.tick{font-family:var(--mono);font-size:10px;color:#2a2a45;display:inline-flex;gap:5px;align-items:center;padding:0 16px;cursor:pointer;transition:color .15s;}
+.tick:hover{color:#AFA9EC;}
+.tick.active-fig{color:var(--purple);}
+.tick-pos{color:#5DCAA5;font-weight:500;}
+.tick-neg{color:#F0997B;font-weight:500;}
+.tick-sep{width:3px;height:3px;border-radius:50%;background:#1e1e35;display:inline-block;}
+
+/* BREAKING */
+.breaking-wrap{position:fixed;top:16px;right:16px;z-index:100;display:flex;flex-direction:column;gap:6px;width:270px;pointer-events:none;}
+.breaking{background:#1a1740;border:.5px solid var(--purple);border-radius:9px;padding:12px 14px;animation:slideIn .35s ease;}
+.breaking.pen{background:#1a0808;border-color:#7f1d1d;}
+.breaking.win{background:#091a12;border-color:var(--teal);}
+@keyframes slideIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideOut{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(14px)}}
+.b-tag{font-family:var(--mono);font-size:8px;letter-spacing:.14em;font-weight:500;margin-bottom:4px;text-transform:uppercase;}
+.b-hed{font-size:11px;font-weight:500;color:#f0ede8;line-height:1.3;margin-bottom:4px;}
+.breaking.pen .b-hed{color:#fca5a5;}
+.breaking.win .b-hed{color:#9FE1CB;}
+.b-pts{font-family:var(--mono);font-size:12px;font-weight:500;}
+
+/* SOURCES */
+.src-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.src-modal{background:#111125;border:.5px solid var(--purple);border-radius:12px;padding:18px;max-width:320px;width:100%;}
+.src-modal-tag{font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:var(--purple);text-transform:uppercase;margin-bottom:6px;}
+.src-modal-hed{font-size:12px;font-weight:500;color:#f0ede8;line-height:1.4;margin-bottom:12px;padding-bottom:10px;border-bottom:.5px solid #1e1e35;}
+.src-modal-label{font-family:var(--mono);font-size:8px;color:#3C3489;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;}
+.src-link{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;background:#0d0d20;border:.5px solid #1e1e35;border-radius:5px;margin-bottom:5px;text-decoration:none;transition:border-color .12s;cursor:pointer;}
+.src-link:hover{border-color:var(--purple);}
+.src-outlet{font-size:11px;font-weight:500;color:#AFA9EC;}
+.src-arrow{font-size:9px;color:#3C3489;}
+.src-modal-close{width:100%;margin-top:12px;background:transparent;border:.5px solid #1e1e35;border-radius:5px;padding:7px;font-family:var(--mono);font-size:9px;color:#555;cursor:pointer;}
+.src-modal-close:hover{border-color:var(--purple);color:#AFA9EC;}
+.src-tag{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:8px;color:#3C3489;cursor:pointer;margin-top:4px;padding:2px 6px;border:.5px solid #1e1e35;border-radius:3px;transition:all .12s;}
+.src-tag:hover{border-color:var(--purple);color:var(--purple);}
+.src-count{color:var(--purple);font-weight:500;}
+
+@keyframes scorePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fu{opacity:0;animation:fadeUp .6s ease forwards;}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}.d4{animation-delay:.4s}.d5{animation-delay:.5s}.d6{animation-delay:.6s}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- LEFT -->
+  <div class="left">
+
+    <!-- GLOBE upper right -->
+    <svg class="globe" viewBox="0 0 560 560" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="280" cy="280" r="250" fill="#1a1740" stroke="#7F77DD" stroke-width="3"/>
+      <circle cx="280" cy="280" r="272" fill="none" stroke="#7F77DD" stroke-width="1" opacity="0.3"/>
+      <ellipse cx="280" cy="280" rx="250" ry="70"  fill="none" stroke="#7F77DD" stroke-width="1.5"/>
+      <ellipse cx="280" cy="280" rx="250" ry="140" fill="none" stroke="#7F77DD" stroke-width="1.5"/>
+      <ellipse cx="280" cy="280" rx="250" ry="210" fill="none" stroke="#534AB7" stroke-width="1"/>
+      <ellipse cx="280" cy="280" rx="80"  ry="250" fill="none" stroke="#7F77DD" stroke-width="1.5"/>
+      <ellipse cx="280" cy="280" rx="160" ry="250" fill="none" stroke="#7F77DD" stroke-width="1.5"/>
+      <ellipse cx="280" cy="280" rx="230" ry="250" fill="none" stroke="#534AB7" stroke-width="1"/>
+      <line x1="30"  y1="280" x2="530" y2="280" stroke="#7F77DD" stroke-width="2.5"/>
+      <line x1="280" y1="30"  x2="280" y2="530" stroke="#7F77DD" stroke-width="2.5"/>
+      <line x1="30"  y1="180" x2="530" y2="180" stroke="#534AB7" stroke-width="1"/>
+      <line x1="30"  y1="380" x2="530" y2="380" stroke="#534AB7" stroke-width="1"/>
+      <circle cx="280" cy="30"  r="8" fill="#7F77DD"/>
+      <circle cx="280" cy="530" r="8" fill="#7F77DD"/>
+      <circle cx="30"  cy="280" r="8" fill="#534AB7"/>
+      <circle cx="530" cy="280" r="8" fill="#534AB7"/>
+      <line x1="280" y1="30"  x2="280" y2="75"  stroke="#7F77DD" stroke-width="5" stroke-linecap="round"/>
+      <line x1="280" y1="485" x2="280" y2="530" stroke="#7F77DD" stroke-width="5" stroke-linecap="round"/>
+      <line x1="30"  y1="280" x2="75"  y2="280" stroke="#7F77DD" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="280" cy="280" r="16" fill="#7F77DD"/>
+      <circle cx="280" cy="280" r="6"  fill="#EEEDFE"/>
+      <circle cx="200" cy="220" r="7" fill="#5DCAA5" opacity="0.9"/>
+      <circle cx="350" cy="240" r="6" fill="#F0997B" opacity="0.9"/>
+      <circle cx="240" cy="320" r="7" fill="#5DCAA5" opacity="0.9"/>
+      <circle cx="360" cy="330" r="6" fill="#7F77DD" opacity="0.9"/>
+      <circle cx="185" cy="295" r="6" fill="#5DCAA5" opacity="0.9"/>
+      <circle cx="315" cy="195" r="6" fill="#F0997B" opacity="0.8"/>
+    </svg>
+
+    <!-- ROW 1: Logo -->
+    <div class="fu d1">
+      <div class="logo">Politi<span>play</span></div>
+      <div class="logo-sub">politiplay.net</div>
+    </div>
+
+    <!-- ROW 2: Headline -->
+    <div class="fu d2">
+      <div class="headline">Pick the ones who <em>matter</em>.<br>Win the week.</div>
+    </div>
+
+    <!-- ROW 3: Taglines -->
+    <div class="taglines fu d3">
+      <div class="tagline">11 leaders, spokespeople, and chaos agents. Score when they make news.</div>
+      <div class="tagline-kicker">Prizes, praise, and the knowledge that you know what the hell is going on.</div>
+    </div>
+
+    <!-- ROW 4: Pills -->
+    <div class="pill-row fu d3">
+      <span class="pill p1">Weekly Sweep winner</span>
+      <span class="pill p2">Double Sweep glory</span>
+      <span class="pill p3">Bragging rights</span>
+      <span class="pill p4">+ a teddy bear</span>
+    </div>
+
+    <!-- ROW 5: Draft grid -->
+    <div class="draft-section fu d4">
+      <div class="draft-label">Preview — pick 3 to try it · full squads are 11 figures</div>
+      <div class="draft-grid" id="draftGrid"></div>
+    </div>
+
+    <!-- ROW 6: Squad score + Email side by side -->
+    <div class="bottom-row fu d5">
+      <div class="squad-bar">
+        <div>
+          <div class="squad-lbl">Squad score</div>
+          <div class="squad-picks" id="squadPicks">Pick up to 3 figures</div>
+        </div>
+        <div class="squad-score" id="squadScore">+0</div>
+      </div>
+      <div class="email-section">
+        <div class="form-lbl">Get early access</div>
+        <div class="form-row">
+          <input class="form-input" type="email" id="emailInput" placeholder="your@email.com">
+          <button class="form-btn" onclick="submit()">Notify me</button>
+        </div>
+        <div class="form-note" id="formNote">No spam. One email when we launch.</div>
+        <div class="success-msg" id="successMsg">You're on the list. Draft opens soon.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel fu d6">
+    <div class="panel-header">
+      <div class="panel-title">Live scoring feed · Week 14</div>
+      <div class="live-dot"></div>
+    </div>
+    <div class="feed" id="feed">
+      <div id="feedEmpty" style="padding:40px 0;text-align:center;color:#2a2a45;font-family:var(--mono);font-size:9px;line-height:2.4;">SWEEP BEGINS MONDAY<br>EVENTS FIRE THROUGH THE WEEK</div>
+    </div>
+    <div class="panel-footer">
+      <div class="lb-title">Leaderboard · USA region</div>
+      <div id="lb"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
+<div class="breaking-wrap" id="breaking"></div>
+
+<script>
+const FIGS = [
+  {id:1, name:"Trump",    flag:"🇺🇸",pos:"HoS",wc:false,col:"#7F77DD"},
+  {id:2, name:"AOC",      flag:"🇺🇸",pos:"Leg",wc:false,col:"#1D9E75"},
+  {id:3, name:"Musk",     flag:"🇺🇸",pos:"WLD",wc:true, col:"#D4537E"},
+  {id:4, name:"Newsom",   flag:"🇺🇸",pos:"HoS",wc:false,col:"#7F77DD"},
+  {id:5, name:"Powell",   flag:"🇺🇸",pos:"WBR",wc:false,col:"#D85A30"},
+  {id:6, name:"Sanders",  flag:"🇺🇸",pos:"Leg",wc:false,col:"#1D9E75"},
+  {id:7, name:"RFK Jr.",  flag:"🇺🇸",pos:"WLD",wc:true, col:"#D4537E"},
+  {id:8, name:"Harris",   flag:"🇺🇸",pos:"Opp",wc:false,col:"#378ADD"},
+  {id:9, name:"Vance",    flag:"🇺🇸",pos:"HoS",wc:false,col:"#7F77DD"},
+  {id:10,name:"Rubio",    flag:"🇺🇸",pos:"WBR",wc:false,col:"#D85A30"},
+  {id:11,name:"Cheney",   flag:"🇺🇸",pos:"WLD",wc:true, col:"#D4537E"},
+  {id:12,name:"Whitmer",  flag:"🇺🇸",pos:"HoS",wc:false,col:"#7F77DD"},
+];
+
+const EVENTS = [
+  // ── USA (70%) ──────────────────────────────────────────────
+  {fid:1, hed:"Trump denies US knew of Israeli strike on Iran gas field — officials contradict him",
+   det:"Oil hits $118/barrel. White House says no advance knowledge; Axios reports strike was approved by Trump.",raw:20,pen:false,
+   src:[{outlet:"Axios",url:"https://www.axios.com"},{outlet:"Politico",url:"https://www.politico.com"},{outlet:"NYT",url:"https://www.nytimes.com"}]},
+  {fid:1, hed:"Pentagon seeks $200bn more from Congress to fund Iran war",
+   det:"Senior officials confirm request. Operation Epic Fury enters new phase. Senate war powers vote looms.",raw:18,pen:false,
+   src:[{outlet:"Washington Post",url:"https://www.washingtonpost.com"},{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"AP News",url:"https://apnews.com"}]},
+  {fid:9, hed:"Senate rejects war powers resolution to pull US forces from Iran 47-53",
+   det:"S.J.Res. 118 fails. Vance casts tie-breaking vote. Democrats vow to reintroduce.",raw:15,pen:false,
+   src:[{outlet:"Congress.gov",url:"https://www.congress.gov/congressional-record"},{outlet:"AP News",url:"https://apnews.com"},{outlet:"Politico",url:"https://www.politico.com"}]},
+  {fid:7, hed:"Tulsi Gabbard contradicts Trump — says Iran cannot reach US with missiles",
+   det:"Senate Intelligence testimony. Directly contradicts White House talking points on nuclear threat.",raw:14,pen:false,
+   src:[{outlet:"Just Security",url:"https://www.justsecurity.org/134411/early-edition-march-19-2026/"},{outlet:"Politico",url:"https://www.politico.com"},{outlet:"CNN",url:"https://www.cnn.com"}]},
+  {fid:1, hed:"Trump vows to 'massively blow up' Iran gas field if Qatar attacked again",
+   det:"Remarks at White House briefing. Escalation language dominates global coverage. Oil stays above $115.",raw:12,pen:false,
+   src:[{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"Axios",url:"https://www.axios.com"},{outlet:"BBC",url:"https://www.bbc.com"}]},
+  {fid:2, hed:"Democrats walk out of AG Bondi briefing on Epstein files",
+   det:"Rep. Summer Lee introduces impeachment articles. Bondi subpoenaed for April deposition.",raw:12,pen:false,
+   src:[{outlet:"Democracy Now",url:"https://www.democracynow.org/2026/3/19/headlines"},{outlet:"AP News",url:"https://apnews.com"},{outlet:"NYT",url:"https://www.nytimes.com"}]},
+  {fid:7, hed:"FBI confirms it buys commercially available location tracking data on Americans",
+   det:"Kash Patel tells Senate hearing FBI purchases movement data. Privacy groups demand investigation.",raw:10,pen:false,
+   src:[{outlet:"Politico",url:"https://www.politico.com"},{outlet:"Just Security",url:"https://www.justsecurity.org/134411/early-edition-march-19-2026/"}]},
+  {fid:4, hed:"Newsom leads 14-state coalition challenging Trump's Iran war powers",
+   det:"Constitutional challenge filed in DC Circuit. 'Congress has not authorized this war.'",raw:15,pen:false,
+   src:[{outlet:"LA Times",url:"https://www.latimes.com"},{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"Politico",url:"https://www.politico.com"}]},
+  {fid:6, hed:"Sanders calls Iran war 'illegal and unconstitutional' — demands immediate ceasefire",
+   det:"Senate floor speech. Introduces emergency legislation to cut off war funding. Goes viral.",raw:10,pen:false,
+   src:[{outlet:"The Hill",url:"https://thehill.com"},{outlet:"Democracy Now",url:"https://www.democracynow.org/2026/3/19/headlines"}]},
+  {fid:8, hed:"Harris leads anti-war rally in DC — largest since Iraq invasion",
+   det:"Estimated 40,000 attend. Capitol Hill protest demands 'Not one dime more for Trump's Iran war.'",raw:14,pen:false,
+   src:[{outlet:"NBC News",url:"https://www.nbcnews.com"},{outlet:"CNN",url:"https://www.cnn.com"},{outlet:"AP News",url:"https://apnews.com"}]},
+  {fid:2, hed:"AOC introduces Iran War Powers Act — demands Congressional vote within 30 days",
+   det:"Bill gets 47 co-sponsors in 24 hours. Most-watched floor speech of the year.",raw:12,pen:false,
+   src:[{outlet:"C-SPAN",url:"https://www.cspan.org"},{outlet:"The Hill",url:"https://thehill.com"},{outlet:"Politico",url:"https://www.politico.com"}]},
+  {fid:5, hed:"Fed holds rates amid Middle East energy shock — oil at $118/barrel",
+   det:"Powell cites 'extraordinary uncertainty.' Markets volatile. Gas prices hit record highs.",raw:17,pen:false,
+   src:[{outlet:"Bloomberg",url:"https://www.bloomberg.com"},{outlet:"FT",url:"https://www.ft.com"},{outlet:"CNBC",url:"https://www.cnbc.com"}]},
+  {fid:3, hed:"Musk posts support for Iran strikes — DOGE critics call for his removal",
+   det:"X post goes viral. Senate Democrats demand Musk resign federal advisory role. White House silent.",raw:14,pen:false,
+   src:[{outlet:"The Verge",url:"https://www.theverge.com"},{outlet:"Axios",url:"https://www.axios.com"},{outlet:"Reuters",url:"https://www.reuters.com"}]},
+  // ── GLOBAL (30%) ──────────────────────────────────────────
+  {fid:10, hed:"EU summit backs €90bn Ukraine loan — Zelenskyy addresses leaders in Brussels",
+   det:"European Council March 19-20. First disbursement expected by April. Merz pushes new Russia sanctions.",raw:20,pen:false,
+   src:[{outlet:"European Council",url:"https://www.consilium.europa.eu/en/press/press-releases/2026/03/19/european-council-19-march-2026-ukraine/"},{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"BBC",url:"https://www.bbc.com"}]},
+  {fid:12, hed:"Zelenskyy makes 12th trip to Paris — security guarantees top agenda",
+   det:"Shifting geopolitical priorities amid Middle East crisis. Macron pledges continued support.",raw:15,pen:false,
+   src:[{outlet:"Ukrinform",url:"https://www.ukrinform.net"},{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"Le Monde",url:"https://www.lemonde.fr"}]},
+  {fid:9, hed:"Iranian missiles strike civilians in occupied West Bank — three killed",
+   det:"Palestinian officials confirm casualties. UN Security Council emergency session called.",raw:12,pen:false,
+   src:[{outlet:"AP News",url:"https://apnews.com"},{outlet:"BBC",url:"https://www.bbc.com"},{outlet:"Reuters",url:"https://www.reuters.com"}]},
+  {fid:11, hed:"12 Arab and Islamic foreign ministers call on Iran to halt attacks immediately",
+   det:"Joint statement from Riyadh summit. Unprecedented Gulf unity. Iran rejects ultimatum.",raw:14,pen:false,
+   src:[{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"AP News",url:"https://apnews.com"},{outlet:"Al Jazeera",url:"https://www.aljazeera.com"}]},
+  {fid:1, hed:"US considers deploying ground troops to secure Iran's enriched uranium stocks",
+   det:"Three sources confirm options discussed at Pentagon. Kharg Island deployment on the table.",raw:16,pen:false,
+   src:[{outlet:"Reuters",url:"https://www.reuters.com"},{outlet:"Washington Post",url:"https://www.washingtonpost.com"},{outlet:"Politico",url:"https://www.politico.com"}]},
+  {fid:10, hed:"EU intelligence chief Kallas: 'Russia is not winning — its army is bogged down'",
+   det:"EU Ambassadors Conference keynote. Calls for accelerated weapons delivery to Ukraine.",raw:12,pen:false,
+   src:[{outlet:"EEAS",url:"https://www.eeas.europa.eu/eeas/keynote-speech-hrvp-kaja-kallas-2026-eu-ambassadors-conference_en"},{outlet:"Reuters",url:"https://www.reuters.com"}]},
+  {fid:3, hed:"Global oil benchmark hits $118/barrel — highest since 2022 energy crisis",
+   det:"Persian Gulf energy infrastructure attacks trigger spike. Analysts warn of $130 if Strait of Hormuz disrupted.",raw:16,pen:false,
+   src:[{outlet:"Bloomberg",url:"https://www.bloomberg.com"},{outlet:"FT",url:"https://www.ft.com"},{outlet:"Just Security",url:"https://www.justsecurity.org/134411/early-edition-march-19-2026/"}]},
+];
+
+const RIVALS = [
+  {name:"Politico Pete",score:163},
+  {name:"DC Insider",   score:141},
+  {name:"The Pundit",   score:98},
+];
+
+let drafted=new Set(), figPts={}, tPts={}, fired=[], myTotal=0;
+FIGS.forEach(f=>{figPts[f.id]=0;tPts[f.id]=0;});
+
+function figById(id){return FIGS.find(f=>f.id===id);}
+
+function buildTicker(){
+  const items=FIGS.map(f=>`
+    <span class="tick ${drafted.has(f.id)?'active-fig':''}" onclick="toggle(${f.id})">
+      <span class="tick-sep"></span>
+      <span>${f.flag} ${f.name}</span>
+      <span class="${tPts[f.id]>=0?'tick-pos':'tick-neg'}">${tPts[f.id]>=0?'+':''}${tPts[f.id]}</span>
+    </span>`).join('');
+  document.getElementById('ticker').innerHTML=items+items;
+}
+
+function renderGrid(){
+  document.getElementById('draftGrid').innerHTML=FIGS.map(f=>{
+    const pts=figPts[f.id];
+    const full=drafted.size>=3&&!drafted.has(f.id);
+    return`<button class="fig-btn ${drafted.has(f.id)?'drafted':''}" ${full?'disabled':''} onclick="toggle(${f.id})">
+      <div class="crown">★</div>
+      <div class="fig-flag">${f.flag}</div>
+      <div class="fig-name">${f.name}</div>
+      <div class="fig-pos" style="color:${f.col}">${f.pos}</div>
+      ${pts!==0?`<div class="fig-pts" style="color:${pts>0?'#5DCAA5':'#F0997B'}">${pts>0?'+':''}${pts}</div>`:''}
+      ${f.wc?`<div class="fig-wc">1.5×</div>`:''}
+    </button>`;
+  }).join('');
+}
+
+function toggle(fid){
+  if(drafted.size>=3&&!drafted.has(fid))return;
+  drafted.has(fid)?drafted.delete(fid):drafted.add(fid);
+  calcTotal(); renderGrid(); buildTicker(); renderLB();
+}
+
+function calcTotal(){
+  myTotal=0;
+  drafted.forEach(fid=>myTotal+=figPts[fid]||0);
+  const el=document.getElementById('squadScore');
+  el.textContent=(myTotal>=0?'+':'')+myTotal;
+  el.className='squad-score'+(myTotal<0?' neg':'');
+  document.getElementById('squadPicks').textContent=
+    drafted.size===0?'Pick up to 3 figures':`${drafted.size} of 3 drafted`;
+}
+
+function showSources(evIdx){
+  const ev=EVENTS[evIdx]; if(!ev)return;
+  const bg=document.createElement('div');
+  bg.className='src-modal-bg';
+  bg.onclick=e=>{if(e.target===bg)bg.remove();};
+  bg.innerHTML=`<div class="src-modal">
+    <div class="src-modal-tag">Verified sources · ${ev.src.length} outlets</div>
+    <div class="src-modal-hed">${ev.hed}</div>
+    <div class="src-modal-label">Read the full story</div>
+    ${ev.src.map(s=>`<a class="src-link" href="${s.url}" target="_blank" rel="noopener"><span class="src-outlet">${s.outlet}</span><span class="src-arrow">↗</span></a>`).join('')}
+    <button class="src-modal-close" onclick="this.closest('.src-modal-bg').remove()">Close</button>
+  </div>`;
+  document.body.appendChild(bg);
+}
+
+function addFeed(ev,fig,pts,evIdx){
+  const fe=document.getElementById('feedEmpty'); if(fe)fe.remove();
+  const yours=drafted.has(fig.id);
+  const now=new Date();
+  const t=now.getHours()+':'+(now.getMinutes().toString().padStart(2,'0'));
+  const el=document.createElement('div');
+  el.className=`feed-item${ev.pen?' penalty':''}${yours?' highlight':''}`;
+  el.innerHTML=`
+    <div class="feed-time">${t} · ${fig.pos}${fig.wc?' · WLD 1.5×':''}</div>
+    <div class="feed-head">${ev.hed}</div>
+    <div class="feed-detail">${ev.det}</div>
+    <span class="src-tag" onclick="showSources(${evIdx})"><span class="src-count">${ev.src.length}</span> sources ↗</span>
+    ${yours?`<div class="feed-your-score" style="margin-top:6px">
+      <span style="color:#AFA9EC">${fig.flag} ${fig.name} on your squad</span>
+      <span style="color:${pts>=0?'#5DCAA5':'#F0997B'};font-weight:500">${pts>=0?'+':''}${pts}</span>
+    </div>`:''}`;
+  const feed=document.getElementById('feed');
+  feed.insertBefore(el,feed.firstChild);
+  if(feed.children.length>14)feed.removeChild(feed.lastChild);
+}
+
+function flash(ev,fig,pts,yours,evIdx){
+  const wrap=document.getElementById('breaking');
+  const el=document.createElement('div');
+  el.className=`breaking${ev.pen?' pen':yours?' win':''}`;
+  el.style.pointerEvents='auto';
+  el.innerHTML=`
+    <div class="b-tag" style="color:${ev.pen?'#fca5a5':yours?'#5DCAA5':'#7F77DD'}">${ev.pen?'Bad news dept.':yours?'Your squad scores':'Breaking'}</div>
+    <div class="b-hed">${ev.hed}</div>
+    <div class="b-pts" style="color:${pts>=0?'#5DCAA5':'#F0997B'}">${pts>=0?'+':''}${pts} pts · ${fig.flag} ${fig.name}${fig.wc?' (1.5×)':''}</div>
+    <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+      ${ev.src.map(s=>`<a href="${s.url}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:8px;color:#3C3489;text-decoration:none;border:.5px solid #1e1e35;padding:2px 6px;border-radius:3px;" onmouseover="this.style.color='#7F77DD'" onmouseout="this.style.color='#3C3489'">${s.outlet} ↗</a>`).join('')}
+    </div>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{el.style.animation='slideOut .35s ease forwards';setTimeout(()=>el.remove(),350);},5500);
+}
+
+function renderLB(){
+  const rows=[{name:'You',score:myTotal,you:true},...RIVALS].sort((a,b)=>b.score-a.score);
+  document.getElementById('lb').innerHTML=rows.map((r,i)=>`
+    <div class="lb-row ${r.you?'you':''}">
+      <span style="color:${r.you?'#AFA9EC':'#555'}">${['🏆 ','🥈 ','🥉 ',''][Math.min(i,3)]}${r.name}</span>
+      <span style="color:${r.score>0?'#5DCAA5':r.score<0?'#F0997B':'#555'};font-family:var(--mono);font-weight:500">${r.score>0?'+':''}${r.score}</span>
+    </div>`).join('');
+}
+
+function fire(){
+  const pool=EVENTS.map((e,i)=>({e,i})).filter(({e})=>!fired.includes(e));
+  if(!pool.length){fired=[];return;}
+  const {e:ev,i:evIdx}=pool[Math.floor(Math.random()*pool.length)];
+  fired.push(ev);
+  const fig=figById(ev.fid); if(!fig)return;
+  let pts=ev.raw;
+  if(fig.wc)pts=Math.round(pts*1.5);
+  tPts[fig.id]=Math.round((tPts[fig.id]||0)+pts);
+  const yours=drafted.has(fig.id);
+  if(yours){
+    figPts[fig.id]=Math.round((figPts[fig.id]||0)+pts);
+    calcTotal();
+    const btn=document.querySelector(`[onclick="toggle(${fig.id})"]`);
+    if(btn){btn.classList.add('pulse');setTimeout(()=>btn.classList.remove('pulse'),500);}
+    renderGrid();
+  }
+  addFeed(ev,fig,pts,evIdx);
+  flash(ev,fig,pts,yours,evIdx);
+  buildTicker();
+  renderLB();
+}
+
+function submit(){
+  const v=document.getElementById('emailInput').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){
+    document.getElementById('emailInput').style.borderColor='#F0997B';
+    setTimeout(()=>document.getElementById('emailInput').style.borderColor='',1200);
+    return;
+  }
+  document.querySelector('.form-row').style.display='none';
+  document.getElementById('formNote').style.display='none';
+  document.getElementById('successMsg').style.display='block';
+}
+document.getElementById('emailInput').addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
+
+renderGrid(); buildTicker(); renderLB();
+setTimeout(()=>{fire();setInterval(fire,5000+Math.random()*2000);},2000);
+</script>
+</body>
+</html>

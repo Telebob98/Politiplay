@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Politiplay — Playtest v2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#26215C;--navy2:#1a1740;--navy3:#12102e;
+  --purple:#7F77DD;--purple-l:#EEEDFE;--purple-m:#534AB7;
+  --teal:#1D9E75;--teal-l:#E1F5EE;
+  --coral:#D85A30;--coral-l:#FAECE7;
+  --amber:#EF9F27;--amber-l:#FAEEDA;
+  --pink:#D4537E;--pink-l:#FBEAF0;
+  --blue-l:#E6F1FB;
+  --red:#E24B4A;--red-l:#FCEBEB;
+  --ink:#1a1918;--ink2:#3d3c38;--ink3:#7a7870;
+  --paper:#F7F5EF;--paper2:#EDEBE3;
+  --white:#fff;
+  --pos-hos:#7F77DD;--pos-leg:#1D9E75;--pos-opp:#378ADD;
+  --pos-wbr:#D85A30;--pos-wc:#D4537E;
+}
+body{background:var(--navy3);color:#f0ede8;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+.serif{font-family:Georgia,serif}
+.mono{font-family:'Courier New',monospace}
+
+/* buttons */
+.btn{border:none;cursor:pointer;font-family:'Courier New',monospace;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:6px;transition:all .15s;font-size:11px}
+.btn-primary{background:var(--purple);color:#fff;padding:12px 22px}
+.btn-primary:hover{background:var(--purple-m)}
+.btn-ghost{background:#1e1e30;border:1px solid #2a2a45;color:#888;padding:10px 16px}
+.btn-ghost:hover{background:#26263a;color:#bbb}
+.btn-ghost.active{background:var(--purple-m);border-color:var(--purple);color:#fff}
+.btn-sm{padding:5px 10px;font-size:10px}
+.btn-danger{background:#7f1d1d;color:#fca5a5;padding:12px 22px}
+.btn-danger:hover{background:#991b1b}
+
+/* inputs */
+.input{background:#0d0d20;border:1px solid #2a2a45;border-radius:6px;padding:10px 14px;color:#f0ede8;font-size:14px;font-family:inherit;width:100%;transition:border-color .15s;outline:none}
+.input:focus{border-color:var(--purple)}
+
+/* cards */
+.card{background:#111125;border:1px solid #1e1e35;border-radius:10px;padding:16px}
+
+/* badges */
+.badge{display:inline-block;font-size:9px;font-family:'Courier New',monospace;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.5px}
+
+/* figure cards */
+.fig-card{background:#111125;border:1px solid #1e1e35;border-radius:8px;padding:10px;cursor:pointer;transition:all .12s;width:100%;text-align:left}
+.fig-card:hover:not(:disabled){border-color:var(--purple);background:#18182a}
+.fig-card:disabled{opacity:.18;cursor:not-allowed}
+.fig-card.wc-card:not(:disabled){border-color:rgba(212,83,126,.35)}
+.fig-card.wc-card:hover:not(:disabled){border-color:var(--pink)}
+
+/* layout */
+.phase-bar{background:#0d0d20;border-bottom:1px solid #1e1e35;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10}
+.pass-bar{background:#160c28;border-bottom:1px solid var(--purple-m);padding:8px 20px;text-align:center;font-family:'Courier New',monospace;font-size:11px;color:#AFA9EC;letter-spacing:1px;font-weight:700}
+.sep{height:1px;background:#1e1e35;flex:1}
+.score-pill{font-family:'Courier New',monospace;font-size:18px;font-weight:700}
+.grid-figs{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:7px}
+.layout-2col{display:flex;gap:14px;flex-wrap:wrap}
+.sidebar{width:195px;flex-shrink:0}
+.main-col{flex:1 1 380px}
+.filter-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.cap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;max-width:760px;margin:0 auto 24px}
+.week-layout{display:flex;gap:14px;flex-wrap:wrap;padding:16px 20px;max-width:1020px;margin:0 auto}
+.scoreboard{width:200px;flex-shrink:0}
+.sb-row{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:6px;margin-bottom:6px;background:#111125;border:1px solid #1e1e35;font-size:12px}
+.sb-row.lead{border-color:var(--purple);background:#160c28}
+
+/* events */
+.event-item{border:1px solid #1e1e35;border-radius:8px;padding:14px;margin-bottom:8px;background:#111125}
+.event-item.penalty{border-color:#7f1d1d;background:#120808}
+.score-flash{font-size:10px;font-family:'Courier New',monospace;margin-top:6px;line-height:2}
+.day-sep{display:flex;align-items:center;gap:10px;margin:18px 0 10px}
+.day-label{font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--purple);letter-spacing:3px}
+
+/* debrief */
+.debrief{border-left:2px solid var(--purple);padding:8px 14px;margin-bottom:12px;font-size:12px;line-height:1.9;color:#666}
+
+/* hint */
+.hint-box{background:#0d0d20;border:1px solid #1e1e35;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:11px;line-height:1.9;font-family:'Courier New',monospace;color:#555}
+.hint-box b{color:#888}
+
+/* podium */
+.podium-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:8px;border:1px solid #1e1e35;background:#111125;margin-bottom:8px}
+
+/* tier badges */
+.t1{background:#FAEEDA;color:#854F0B}
+.t2{background:#FAECE7;color:#993C1D}
+.t3{background:#FCEBEB;color:#A32D2D}
+
+/* sq slot */
+.sq-slot{font-size:10px;font-family:'Courier New',monospace;color:#2a2a45;margin-bottom:2px}
+.sq-pick{font-size:10px;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+
+/* ticker */
+.ticker{background:var(--navy3);border-top:1px solid #1e1e35;padding:6px 20px;display:flex;gap:20px;overflow:hidden;flex-wrap:nowrap}
+.tick{font-size:11px;color:var(--purple);display:flex;gap:5px;align-items:center;white-space:nowrap;font-family:'Courier New',monospace}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────
+const SQUAD_SIZE = 11;
+const POS_CONFIG = {
+  "Head of State":     {badge:"HoS", color:"#7F77DD", slots:2},
+  "Legislator":        {badge:"LEG", color:"#1D9E75", slots:2},
+  "Opposition Leader": {badge:"OPP", color:"#378ADD", slots:2},
+  "World Body Rep":    {badge:"WBR", color:"#D85A30", slots:1},
+  "Wildcard":          {badge:"WLD", color:"#D4537E", slots:2},
+};
+// One free flex slot makes 11 total
+const FLEX_SLOTS = 2; // 2+2+2+1+2 = 9 + 2 flex = 11
+
+const VOL_COLOR = {"Very High":"#ef4444","High":"#f97316","Medium":"#eab308","Low":"#6b7280"};
+
+// ─── FIGURES ───────────────────────────────────────────────────
+const FIGURES = [
+  // Heads of State — USA dominant
+  {id:1,  name:"Donald Trump",         pos:"Head of State",     flag:"🇺🇸", vol:"Very High", note:"Commander in Chief. Every week is a news cycle."},
+  {id:2,  name:"JD Vance",             pos:"Head of State",     flag:"🇺🇸", vol:"High",      note:"VP. Increasingly prominent. Foreign policy front."},
+  {id:3,  name:"Gavin Newsom",         pos:"Head of State",     flag:"🇺🇸", vol:"High",      note:"California Governor. Loudest Trump foil in the country."},
+  {id:4,  name:"Gretchen Whitmer",     pos:"Head of State",     flag:"🇺🇸", vol:"Medium",    note:"Michigan Gov. Steady Dem voice. Reliable scorer."},
+  {id:5,  name:"Ron DeSantis",         pos:"Head of State",     flag:"🇺🇸", vol:"Medium",    note:"Florida Gov. Policy fighter. Culture war reliable."},
+  {id:6,  name:"Greg Abbott",          pos:"Head of State",     flag:"🇺🇸", vol:"Medium",    note:"Texas Gov. Immigration + border news magnet."},
+  {id:7,  name:"Volodymyr Zelensky",   pos:"Head of State",     flag:"🇺🇦", vol:"High",      note:"War leader. US relations dominate coverage."},
+  {id:8,  name:"Justin Trudeau",       pos:"Head of State",     flag:"🇨🇦", vol:"Medium",    note:"Outgoing PM. US-Canada trade friction in play."},
+  // Legislators — US Congress heavy
+  {id:9,  name:"Bernie Sanders",       pos:"Legislator",        flag:"🇺🇸", vol:"Medium",    note:"Senate. Guaranteed floor action. Reliable scorer."},
+  {id:10, name:"AOC",                  pos:"Legislator",        flag:"🇺🇸", vol:"High",      note:"House. Viral floor moments. High ceiling."},
+  {id:11, name:"Chuck Schumer",        pos:"Legislator",        flag:"🇺🇸", vol:"Low",       note:"Senate Minority Leader. Weekly floor presence."},
+  {id:12, name:"Mitch McConnell",      pos:"Legislator",        flag:"🇺🇸", vol:"Low",       note:"Senate. Fading but still scores on procedural wins."},
+  {id:13, name:"Mike Johnson",         pos:"Legislator",        flag:"🇺🇸", vol:"Medium",    note:"House Speaker. Budget battles. Leadership pressure."},
+  {id:14, name:"Hakeem Jeffries",      pos:"Legislator",        flag:"🇺🇸", vol:"Medium",    note:"House Minority Leader. Consistent opposition scorer."},
+  {id:15, name:"Elizabeth Warren",     pos:"Legislator",        flag:"🇺🇸", vol:"Medium",    note:"Senate. Banking and finance fights. Reliable."},
+  {id:16, name:"Marco Rubio",          pos:"Legislator",        flag:"🇺🇸", vol:"Medium",    note:"Secretary of State. Diplomacy + foreign policy events."},
+  {id:17, name:"Ted Cruz",             pos:"Legislator",        flag:"🇺🇸", vol:"High",      note:"Senate. Controversy reliable. Media magnet."},
+  {id:18, name:"Rand Paul",            pos:"Legislator",        flag:"🇺🇸", vol:"Medium",    note:"Senate. Budget hawk. Occasional procedural bombs."},
+  // Opposition Leaders
+  {id:19, name:"Kamala Harris",        pos:"Opposition Leader", flag:"🇺🇸", vol:"Medium",    note:"Post-election rebuilding. Still draws national coverage."},
+  {id:20, name:"Pete Buttigieg",       pos:"Opposition Leader", flag:"🇺🇸", vol:"Medium",    note:"Ex-Transportation Sec. Emerging Dem opposition voice."},
+  {id:21, name:"Ro Khanna",            pos:"Opposition Leader", flag:"🇺🇸", vol:"Medium",    note:"House. Progressive opposition. Rising profile."},
+  {id:22, name:"Josh Shapiro",         pos:"Opposition Leader", flag:"🇺🇸", vol:"Medium",    note:"PA Governor. Tipped future presidential contender."},
+  {id:23, name:"Raphael Warnock",      pos:"Opposition Leader", flag:"🇺🇸", vol:"Low",       note:"Senate. Moral authority voice. Steady scorer."},
+  {id:24, name:"Nikki Haley",          pos:"Opposition Leader", flag:"🇺🇸", vol:"Medium",    note:"Ex-UN Ambassador. Republican dissenter. Still active."},
+  // World Body Reps — US-relevant picks
+  {id:25, name:"António Guterres",     pos:"World Body Rep",    flag:"🌍", vol:"Low",       note:"UN SG. US-UN friction. Multilateral bonus on crises."},
+  {id:26, name:"Jerome Powell",        pos:"World Body Rep",    flag:"🇺🇸", vol:"High",      note:"Fed Chair. Rate decisions move markets and headlines."},
+  {id:27, name:"Mark Rutte",           pos:"World Body Rep",    flag:"🌍", vol:"Low",       note:"NATO SG. US-NATO relationship in focus."},
+  {id:28, name:"Lael Brainard",        pos:"World Body Rep",    flag:"🇺🇸", vol:"Low",       note:"NEC Director. Economic policy. Steady institutional scorer."},
+  // Wildcards — chaos agents, not in office
+  {id:29, name:"Elon Musk",            pos:"Wildcard",          flag:"🇺🇸", vol:"Very High", note:"1.5× · DOGE + X + Tesla. Daily chaos. Highest ceiling and floor in the pool."},
+  {id:30, name:"Steve Bannon",         pos:"Wildcard",          flag:"🇺🇸", vol:"Very High", note:"1.5× · Legal battles. MAGA media circuit. Sentences, appeals, comebacks."},
+  {id:31, name:"Barack Obama",         pos:"Wildcard",          flag:"🇺🇸", vol:"Low",       note:"1.5× · Occasional interventions. Safe, steady Wildcard."},
+  {id:32, name:"Hillary Clinton",      pos:"Wildcard",          flag:"🇺🇸", vol:"Medium",    note:"1.5× · Still draws fire from both sides. Reliable media presence."},
+  {id:33, name:"Tucker Carlson",       pos:"Wildcard",          flag:"🇺🇸", vol:"High",      note:"1.5× · Media chaos agent. Interviews, stunts, controversies."},
+  {id:34, name:"RFK Jr.",              pos:"Wildcard",          flag:"🇺🇸", vol:"High",      note:"1.5× · HHS Secretary. Policy chaos. Vaccines, food, health fights."},
+  {id:35, name:"Vivek Ramaswamy",      pos:"Wildcard",          flag:"🇺🇸", vol:"High",      note:"1.5× · DOGE co-lead. Policy bomb-thrower. High volatility."},
+  {id:36, name:"Liz Cheney",           pos:"Wildcard",          flag:"🇺🇸", vol:"Medium",    note:"1.5× · Republican dissident. Occasional interventions. Safe chaos pick."},
+];
+
+// ─── WEEK EVENTS ───────────────────────────────────────────────
+// penalty: true marks bad-news events
+const WEEK_EVENTS = {
+  Monday:[
+    {id:"m1", headline:"Trump signs sweeping new tariff executive order", detail:"White House confirms broadest trade action in 30 years. S&P 500 drops 2.4%. Canada and EU immediately threaten retaliation.", penalty:false,
+     scoring:[{fid:1, raw:20, label:"Major policy win (Head of State)"}]},
+    {id:"m2", headline:"Musk's DOGE announces $180bn in identified federal spending cuts", detail:"Press conference. Markets mixed. Federal unions file immediate legal challenge. Leads every broadcast.", penalty:false,
+     scoring:[{fid:29, raw:18, label:"Major policy announcement — viral moment (Wildcard)"}]},
+    {id:"m3", headline:"Newsom launches multi-state lawsuit against Trump tariff order", detail:"California leads coalition of 14 states. Filed within hours of signing. Newsom: 'We will not comply.'", penalty:false,
+     scoring:[{fid:3, raw:15, label:"Major opposition action (Head of State)"}]},
+  ],
+  Tuesday:[
+    {id:"t1", headline:"Powell signals Fed will hold rates despite White House pressure", detail:"Fed Chair testimony to Senate. Defies public call from Trump for cuts. Markets volatile.", penalty:false,
+     scoring:[{fid:26, raw:17, label:"Major institutional statement + multilateral bonus (WBR)"}]},
+    {id:"t2", headline:"RFK Jr. announces ban on food dye additives in federal nutrition programs", detail:"HHS policy memo. Food industry stocks drop. Leads health news nationally.", penalty:false,
+     scoring:[{fid:34, raw:15, label:"Major policy win (Wildcard)"}]},
+    {id:"t3", headline:"Schumer approval drops 6pts in new Gallup poll", detail:"Net approval now −18. Leadership questions resurface in Democratic caucus.", penalty:true,
+     scoring:[{fid:11, raw:-8, label:"Tier 1 — approval drop 6pts (Legislator)"}]},
+    {id:"t4", headline:"Sanders reintroduces Medicare for All — fundraising surges $4m overnight", detail:"Progressive base energised. Floor vote expected. Biden-era holdouts urged to sign.", penalty:false,
+     scoring:[{fid:9, raw:10, label:"Major bill introduced (Legislator)"}]},
+  ],
+  Wednesday:[
+    {id:"w1", headline:"Johnson survives House leadership challenge — 219–212", detail:"Narrowest speaker survival in modern history. Freedom Caucus fractures. Three defections.", penalty:false,
+     scoring:[{fid:13, raw:15, label:"Survived no-confidence equivalent (Legislator)"}]},
+    {id:"w2", headline:"AOC floor speech on DOGE cuts goes viral — 18m views in 24hrs", detail:"Most-watched congressional floor clip of the year. Fundraising surge follows.", penalty:false,
+     scoring:[{fid:10, raw:12, label:"Major speech / viral moment (Legislator)"}]},
+    {id:"w3", headline:"Bannon ordered back to prison after appeal rejected by DC Circuit", detail:"Reports to federal facility Friday. MAGA media in overdrive. Conservative news leads.", penalty:true,
+     scoring:[{fid:30, raw:-25, label:"Tier 3 — criminal sentencing (Wildcard)"}]},
+    {id:"w4", headline:"Vance delivers foreign policy address at Hudson Institute", detail:"Signals major US posture shift on NATO burden-sharing. Widely covered internationally.", penalty:false,
+     scoring:[{fid:2, raw:12, label:"Major speech / policy signal (Head of State)"}]},
+  ],
+  Thursday:[
+    {id:"th1", headline:"Rubio signs bilateral security agreement with Japan and South Korea", detail:"Largest trilateral US-Asia deal in 15 years. Multilateral bonus applies.", penalty:false,
+     scoring:[{fid:16, raw:20, label:"Treaty signed + multilateral bonus (WBR)"},{fid:7, raw:10, label:"Treaty benefit (Head of State)"}]},
+    {id:"th2", headline:"Harris launches national listening tour — 12-city announcement", detail:"Signals 2028 groundwork. Gets full cable news cycle. Dem base responds strongly.", penalty:false,
+     scoring:[{fid:19, raw:12, label:"Major political launch (Opposition Leader)"}]},
+    {id:"th3", headline:"DeSantis approval rises +5pts — highest since 2022", detail:"Florida economy numbers boost. Morning Consult weekly tracker.", penalty:false,
+     scoring:[{fid:5, raw:8, label:"Approval rise +5pts (Head of State)"}]},
+    {id:"th4", headline:"Ramaswamy caught contradicting DOGE testimony in leaked audio", detail:"Axios publishes recording. White House distances. Leads tech and politics coverage.", penalty:true,
+     scoring:[{fid:35, raw:-12, label:"Tier 2 — caught in public contradiction (Wildcard)"}]},
+  ],
+  Friday:[
+    {id:"f1", headline:"Trump approval hits 52% — highest of second term", detail:"Reuters/Ipsos weekly poll. Post-tariff announcement bounce. Republicans surge.", penalty:false,
+     scoring:[{fid:1, raw:8, label:"Approval rise +4pts (Head of State)"}]},
+    {id:"f2", headline:"Guterres condemns US tariffs at UN General Assembly emergency session", detail:"Secretary-General calls tariffs 'a threat to multilateral order.' Full international coverage.", penalty:false,
+     scoring:[{fid:25, raw:15, label:"Global crisis response + multilateral bonus (WBR)"}]},
+    {id:"f3", headline:"Whitmer wins major federal infrastructure ruling for Michigan", detail:"Supreme Court 6–3 decision validates EV infrastructure grants. Big home-state win.", penalty:false,
+     scoring:[{fid:4, raw:15, label:"Major policy win (Head of State)"}]},
+    {id:"f4", headline:"Tucker Carlson interview with sanctioned Russian oligarch sparks Senate probe", detail:"Published Friday morning. Both parties call for investigation. Leads weekend news.", penalty:false,
+     scoring:[{fid:33, raw:14, label:"Major viral controversy (Wildcard)"}]},
+  ],
+};
+
+const DEBRIEF_QUESTIONS = [
+  "Did the draft feel strategic? Were there figures you wanted but someone else took?",
+  "Did the Captain pick feel like a real decision — or did the obvious choice just win?",
+  "Were the point swings during the week exciting, or did they feel arbitrary?",
+  "Did the Wildcard 1.5× multiplier change how you drafted — was it worth the risk?",
+  "Were penalties (Tier 1/2/3) fair? Did any feel too harsh or too soft?",
+  "Did you find yourself wanting to check the scores during the week?",
+  "What was the most exciting moment? What was the most deflating?",
+  "What would you change about the scoring? Any event feel wrong?",
+  "Would you play this for real — weekly, on your phone?",
+  "What's missing that would make this more compelling?",
+];
+
+// ─── STATE ─────────────────────────────────────────────────────
+let S = {
+  phase: "setup",
+  numP: 3,
+  names: ["","","",""],
+  squads: [[],[],[],[]],
+  captains: [null,null,null,null],
+  draftOrder: [],
+  pickIdx: 0,
+  capStep: 0,
+  revDay: -1,
+  posFilter: "All",
+};
+
+// ─── HELPERS ───────────────────────────────────────────────────
+const figById = id => FIGURES.find(f => f.id === id);
+
+function snakeOrder(n, rounds){
+  const o = [];
+  for(let r = 0; r < rounds; r++){
+    const row = Array.from({length:n},(_,i)=>i);
+    o.push(...(r%2===1 ? [...row].reverse() : row));
+  }
+  return o;
+}
+
+function calcScores(){
+  const scores = S.squads.slice(0,S.numP).map(()=>({total:0, byFig:{}, events:[]}));
+  if(S.revDay < 0) return scores;
+  ["Monday","Tuesday","Wednesday","Thursday","Friday"].slice(0,S.revDay+1).forEach(day=>{
+    (WEEK_EVENTS[day]||[]).forEach(ev=>{
+      ev.scoring.forEach(({fid,raw,label})=>{
+        const fig = figById(fid);
+        S.squads.slice(0,S.numP).forEach((sq,pi)=>{
+          if(!sq.includes(fid)) return;
+          let pts = raw;
+          if(fig && fig.pos==="Wildcard") pts = Math.round(pts * 1.5 * 10)/10;
+          if(S.captains[pi]===fid) pts = Math.round(pts * 2 * 10)/10;
+          scores[pi].byFig[fid] = Math.round(((scores[pi].byFig[fid]||0)+pts)*10)/10;
+          scores[pi].total = Math.round((scores[pi].total+pts)*10)/10;
+        });
+      });
+    });
+  });
+  return scores;
+}
+
+function leaderboard(){
+  const sc = calcScores();
+  return S.names.slice(0,S.numP)
+    .map((name,i)=>({name, score:sc[i].total, byFig:sc[i].byFig, idx:i}))
+    .sort((a,b)=>b.score-a.score);
+}
+
+function ptsColor(pts){
+  return pts > 0 ? '#5DCAA5' : pts < 0 ? '#F0997B' : '#555';
+}
+
+function ptsStr(pts){ return (pts>0?'+':'')+pts; }
+
+// ─── RENDER ────────────────────────────────────────────────────
+function render(){
+  document.getElementById('app').innerHTML = ({
+    setup:   renderSetup,
+    draft:   renderDraft,
+    captain: renderCaptain,
+    week:    renderWeek,
+    results: renderResults,
+  }[S.phase]||renderSetup)();
+  bindAll();
+}
+
+// ── SETUP ──
+function renderSetup(){
+  return `
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px">
+    <div style="margin-bottom:8px;text-align:center">
+      <span class="mono" style="font-size:9px;letter-spacing:5px;color:var(--purple-m)">FANTASY POLITICS LEAGUE</span>
+    </div>
+    <div class="serif" style="font-size:64px;line-height:.9;text-align:center;margin-bottom:4px;letter-spacing:-2px">
+      Politi<span style="color:var(--purple)">play</span>
+    </div>
+    <div class="mono" style="font-size:9px;letter-spacing:3px;color:#2a2a45;margin-bottom:40px;text-align:center">PLAYTEST PROTOTYPE · WEEK 1 · USA</div>
+
+    <div class="card" style="width:100%;max-width:440px;border-color:#2a2a45">
+      <div class="mono" style="font-size:10px;color:#555;letter-spacing:1px;margin-bottom:12px">NUMBER OF PLAYERS</div>
+      <div style="display:flex;gap:8px;margin-bottom:28px">
+        ${[2,3,4].map(n=>`<button class="btn btn-ghost ${S.numP===n?'active':''}" data-setn="${n}" style="flex:1;padding:14px;font-size:15px">${n}</button>`).join('')}
+      </div>
+      ${Array(S.numP).fill(0).map((_,i)=>`
+        <div style="margin-bottom:14px">
+          <div class="mono" style="font-size:10px;color:#555;letter-spacing:1px;margin-bottom:6px">PLAYER ${i+1}</div>
+          <input class="input" placeholder="Enter name" data-namei="${i}" value="${S.names[i]||''}">
+        </div>
+      `).join('')}
+      <button class="btn btn-primary" id="startBtn" style="width:100%;margin-top:12px;padding:15px;font-size:12px">
+        Start Draft →
+      </button>
+    </div>
+
+    <div style="margin-top:28px;max-width:420px;text-align:center">
+      <div class="mono" style="font-size:10px;color:#2a2a45;line-height:2.2;letter-spacing:.5px">
+        SNAKE DRAFT · 11 PICKS EACH · PICK YOUR CAPTAIN (2×)<br>
+        WILDCARDS SCORE 1.5× · SCORE MON–FRI · WIN THE SWEEP
+      </div>
+    </div>
+
+    <div style="margin-top:32px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+      ${[
+        {c:'var(--purple-l)',tc:'#534AB7',label:'Head of State'},
+        {c:'var(--teal-l)',tc:'#085041',label:'Legislator'},
+        {c:'var(--blue-l)',tc:'#185FA5',label:'Opposition'},
+        {c:'var(--coral-l)',tc:'#993C1D',label:'World Body'},
+        {c:'var(--pink-l)',tc:'#72243E',label:'Wildcard 1.5×'},
+      ].map(p=>`<span style="font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;background:${p.c};color:${p.tc}">${p.label}</span>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── DRAFT ──
+function renderDraft(){
+  const picked = new Set(S.squads.flat());
+  const curP = S.draftOrder[S.pickIdx];
+  const pName = S.names[curP]||`Player ${curP+1}`;
+  const round = Math.floor(S.pickIdx/S.numP)+1;
+  const filt = S.posFilter;
+  const visibleFigs = filt==="All" ? FIGURES : FIGURES.filter(f=>f.pos===filt);
+
+  return `
+  <div style="min-height:100vh">
+    <div class="phase-bar">
+      <div>
+        <div class="mono" style="font-size:9px;color:#555;letter-spacing:2px">SNAKE DRAFT — ROUND ${round} OF ${SQUAD_SIZE}</div>
+        <div class="serif" style="font-size:22px">${pName}'s pick</div>
+      </div>
+      <div style="text-align:right">
+        <div class="mono" style="font-size:9px;color:#555;letter-spacing:1px">PICK</div>
+        <div class="serif" style="font-size:22px">${S.pickIdx+1} / ${S.draftOrder.length}</div>
+      </div>
+    </div>
+    <div class="pass-bar">📲 PASS THE DEVICE TO ${pName.toUpperCase()}</div>
+
+    <div class="layout-2col" style="padding:14px 16px;max-width:1100px;margin:0 auto">
+      <div class="main-col">
+        <div class="hint-box">
+          <b>Squad target (11 picks):</b> HoS ×2 · LEG ×2 · OPP ×2 · WBR ×1 · WLD ×2 · Flex ×2 &nbsp;|&nbsp;
+          <b>Wildcards</b> score 1.5× &nbsp;|&nbsp; <b>Captain</b> (chosen next) scores 2×
+        </div>
+        <div class="filter-row">
+          ${["All",...Object.keys(POS_CONFIG)].map(p=>{
+            const lbl = p==="All" ? "ALL" : POS_CONFIG[p].badge;
+            return `<button class="btn btn-ghost btn-sm ${S.posFilter===p?'active':''}" data-filt="${p}">${lbl}</button>`;
+          }).join('')}
+        </div>
+        <div class="grid-figs">
+          ${visibleFigs.map(fig=>{
+            const taken = picked.has(fig.id);
+            const cfg = POS_CONFIG[fig.pos];
+            const wc = fig.pos==="Wildcard";
+            const volColor = VOL_COLOR[fig.vol]||'#666';
+            return `<button class="fig-card ${wc?'wc-card':''}" ${taken?'disabled':''} data-pickfig="${fig.id}">
+              <div style="font-size:20px;margin-bottom:5px">${fig.flag}</div>
+              <div style="font-weight:600;font-size:12px;line-height:1.3;margin-bottom:6px;color:${taken?'#333':'#f0ede8'}">${fig.name}</div>
+              <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:4px">
+                <span class="badge" style="background:${cfg.color}">${cfg.badge}</span>
+                <span class="mono" style="font-size:9px;color:${volColor}">${fig.vol}</span>
+              </div>
+              ${!taken?`<div style="font-size:10px;color:#444;line-height:1.4;margin-top:4px">${fig.note}</div>`:''}
+              ${wc&&!taken?`<div class="mono" style="font-size:9px;color:var(--pink);margin-top:5px;font-weight:700">★ 1.5× pts</div>`:''}
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+
+      <div class="sidebar">
+        ${S.names.slice(0,S.numP).map((name,pi)=>{
+          const isCur = pi===curP;
+          const sq = S.squads[pi]||[];
+          return `<div class="card" style="margin-bottom:8px;${isCur?'border-color:var(--purple);background:#140c28':''}">
+            <div style="font-weight:700;font-size:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
+              <span style="color:${isCur?'#AFA9EC':'#f0ede8'}">${isCur?'▶ ':''}${name||`P${pi+1}`}</span>
+              <span class="mono" style="color:#555;font-size:10px">${sq.length}/${SQUAD_SIZE}</span>
+            </div>
+            ${sq.map(fid=>{
+              const f=figById(fid); const cfg=f?POS_CONFIG[f.pos]:null;
+              return f?`<div class="sq-pick">
+                <span style="font-size:14px">${f.flag}</span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ccc;font-size:10px">${f.name}</span>
+                <span class="badge" style="background:${cfg?cfg.color:'#333'}">${cfg?cfg.badge:'?'}</span>
+              </div>`:'';
+            }).join('')}
+            ${Array(Math.max(0,SQUAD_SIZE-sq.length)).fill(0).map(()=>`<div class="sq-slot">— empty</div>`).join('')}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── CAPTAIN ──
+function renderCaptain(){
+  const pi = S.capStep;
+  const pName = S.names[pi]||`Player ${pi+1}`;
+  const sq = S.squads[pi]||[];
+  return `
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 20px">
+    <div class="mono" style="font-size:9px;letter-spacing:4px;color:var(--purple);margin-bottom:8px">CAPTAIN SELECTION</div>
+    <div class="serif" style="font-size:42px;margin-bottom:10px;text-align:center">Pick your captain</div>
+    <div class="mono" style="color:#555;font-size:11px;text-align:center;max-width:420px;line-height:2.2;margin-bottom:16px">
+      Your captain scores <span style="color:#f0ede8;font-weight:700">2×</span> on every event — good and bad — all week.
+      A Wildcard captain is <span style="color:var(--pink);font-weight:700">3×</span> (1.5 × 2).
+      Locked Monday. No swaps.
+    </div>
+    <div class="pass-bar" style="border-radius:6px;margin-bottom:32px;padding:8px 28px;border:1px solid var(--purple-m)">
+      📲 ${pName.toUpperCase()} — picking ${pi+1} of ${S.numP}
+    </div>
+    <div class="cap-grid">
+      ${sq.map(fid=>{
+        const fig=figById(fid); if(!fig) return'';
+        const cfg=POS_CONFIG[fig.pos];
+        const wc = fig.pos==="Wildcard";
+        const mult = wc ? '3×' : '2×';
+        const multColor = wc ? 'var(--pink)' : '#EF9F27';
+        return `<button class="fig-card ${wc?'wc-card':''}" data-setcap="${fid}" style="padding:18px;text-align:center">
+          <div style="font-size:36px;margin-bottom:10px">${fig.flag}</div>
+          <div style="font-weight:700;font-size:13px;margin-bottom:8px">${fig.name}</div>
+          <span class="badge" style="background:${cfg.color}">${cfg.badge}</span>
+          <div class="mono" style="font-size:10px;color:${volColor(fig.vol)};margin-top:6px">${fig.vol} volatility</div>
+          <div class="mono" style="font-size:11px;color:${multColor};margin-top:10px;font-weight:700">
+            ★ Captain = ${mult} pts
+          </div>
+          <div style="font-size:10px;color:#444;margin-top:6px;line-height:1.5">${fig.note}</div>
+        </button>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function volColor(v){ return VOL_COLOR[v]||'#666'; }
+
+// ── WEEK ──
+function renderWeek(){
+  const sc = calcScores();
+  const board = leaderboard();
+  const revDay = S.revDay;
+  const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
+
+  let feedHtml = '';
+  if(revDay < 0){
+    feedHtml = `<div class="card" style="padding:48px;text-align:center;color:#2a2a45;border-color:#1e1e35">
+      <div style="font-size:48px;margin-bottom:16px">📅</div>
+      <div class="mono" style="font-size:12px;line-height:2.2;letter-spacing:.5px;color:#2a2a45">
+        THE SWEEP BEGINS MONDAY<br>HIT REVEAL TO FIRE EACH DAY'S EVENTS
+      </div>
+    </div>`;
+  } else {
+    DAYS.slice(0,revDay+1).forEach(day=>{
+      feedHtml += `<div class="day-sep">
+        <div class="day-label">${day.toUpperCase()}</div>
+        <div class="sep"></div>
+      </div>`;
+      (WEEK_EVENTS[day]||[]).forEach(ev=>{
+        let scorerLines = '';
+        let anyScored = false;
+        ev.scoring.forEach(({fid,raw,label})=>{
+          const fig=figById(fid);
+          S.squads.slice(0,S.numP).forEach((sq,pi)=>{
+            if(!sq.includes(fid)) return;
+            anyScored = true;
+            let pts = raw;
+            const isWc = fig&&fig.pos==="Wildcard";
+            const isCap = S.captains[pi]===fid;
+            if(isWc) pts = Math.round(pts*1.5*10)/10;
+            if(isCap) pts = Math.round(pts*2*10)/10;
+            const marks = [isWc?'WLD 1.5×':'', isCap?'CAP 2×':''].filter(Boolean).join(' + ');
+            scorerLines += `<div class="score-flash" style="color:${ptsColor(pts)}">
+              ${ptsStr(pts)} → <span style="color:#f0ede8;font-weight:700">${S.names[pi]||`P${pi+1}`}</span>
+              ${marks?`<span style="color:#888"> · ${marks}</span>`:''}
+              <span style="color:#444"> · ${fig?fig.name:'?'} · ${label}</span>
+            </div>`;
+          });
+        });
+
+        feedHtml += `<div class="event-item ${ev.penalty?'penalty':''}">
+          ${ev.penalty?`<span class="badge t2" style="margin-bottom:6px;display:inline-block">BAD NEWS</span>`:''}
+          <div style="font-weight:600;font-size:13px;margin-bottom:4px;color:${ev.penalty?'#fca5a5':'#f0ede8'}">${ev.headline}</div>
+          <div style="font-size:11px;color:#555;margin-bottom:${anyScored?8:0}px;line-height:1.7">${ev.detail}</div>
+          ${scorerLines}
+          ${!anyScored?`<div class="mono" style="font-size:10px;color:#2a2a45;margin-top:4px">No rostered figures scored this event</div>`:''}
+        </div>`;
+      });
+    });
+  }
+
+  const nextDay = revDay < 4 ? ["Monday","Tuesday","Wednesday","Thursday","Friday"][revDay+1] : null;
+  const allRevealed = revDay >= 4;
+
+  return `
+  <div style="min-height:100vh">
+    <div class="phase-bar" style="flex-wrap:wrap;gap:8px">
+      <div>
+        <div class="mono" style="font-size:9px;color:#555;letter-spacing:2px">WEEK 1 SWEEP · USA</div>
+        <div class="serif" style="font-size:20px">${revDay>=0?["Monday","Tuesday","Wednesday","Thursday","Friday"][revDay]+' events':'Sweep not started'}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        ${!allRevealed?`<button class="btn btn-primary" id="revealBtn">
+          ${revDay<0?'Reveal Monday →':'Reveal '+nextDay+' →'}
+        </button>`:''}
+        ${allRevealed?`<button class="btn btn-primary" id="toResults">See Final Results →</button>`:''}
+      </div>
+    </div>
+
+    <div class="week-layout">
+      <div style="flex:1 1 420px">${feedHtml}</div>
+
+      <div class="scoreboard">
+        <div class="mono" style="font-size:9px;letter-spacing:2px;color:#555;margin-bottom:10px">LEADERBOARD</div>
+        ${board.map((row,rank)=>{
+          const isLead = rank===0 && row.score > 0;
+          const figEntries = Object.entries(sc[row.idx].byFig);
+          return `<div class="sb-row ${isLead?'lead':''}">
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700;font-size:12px;margin-bottom:3px">
+                ${rank===0&&row.score>0?'🏆 ':''}${row.name||`P${row.idx+1}`}
+              </div>
+              <div style="font-size:9px;font-family:'Courier New',monospace;color:#555;line-height:1.8">
+                ${figEntries.map(([fid,pts])=>{
+                  const f=figById(+fid);
+                  const isCap = S.captains[row.idx]===+fid;
+                  return f?`${f.flag} ${ptsStr(pts)}${isCap?' ★':''}`:'';
+                }).filter(Boolean).join(' · ')}
+              </div>
+            </div>
+            <div class="score-pill" style="font-size:20px;color:${ptsColor(row.score)};margin-left:8px;flex-shrink:0">${ptsStr(row.score)}</div>
+          </div>`;
+        }).join('')}
+        ${revDay<0?`<div class="mono" style="font-size:10px;color:#2a2a45;text-align:center;margin-top:16px;line-height:2">Scores appear<br>as events fire</div>`:''}
+
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid #1e1e35">
+          <div class="mono" style="font-size:9px;color:#2a2a45;letter-spacing:1px;margin-bottom:8px">CAPTAIN PICKS</div>
+          ${S.names.slice(0,S.numP).map((name,pi)=>{
+            const f = figById(S.captains[pi]);
+            return `<div style="font-size:11px;margin-bottom:5px;color:#555">
+              <span style="color:#888">${name||`P${pi+1}`}</span>
+              ${f?` · ${f.flag} ${f.name}`:' · none'}
+              ${f&&f.pos==="Wildcard"?`<span class="mono" style="color:var(--pink);font-size:9px"> 3×</span>`:`<span class="mono" style="color:#EF9F27;font-size:9px"> 2×</span>`}
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── RESULTS ──
+function renderResults(){
+  const sc = calcScores();
+  const board = leaderboard();
+  const winner = board[0];
+  const medals = ['🥇','🥈','🥉','🏅','🏅'];
+  return `
+  <div style="min-height:100vh;padding:48px 20px;max-width:760px;margin:0 auto">
+    <div class="mono" style="font-size:9px;letter-spacing:4px;color:var(--purple);text-align:center;margin-bottom:8px">WEEK 1 · FINAL STANDINGS</div>
+    <div class="serif" style="font-size:48px;text-align:center;margin-bottom:36px;line-height:1">The Sweep</div>
+
+    <div style="background:#0d0c20;border:1px solid var(--purple-m);border-radius:14px;padding:32px;text-align:center;margin-bottom:28px">
+      <div style="font-size:52px;margin-bottom:10px">🏆</div>
+      <div class="mono" style="font-size:11px;color:var(--purple);letter-spacing:4px;margin-bottom:10px">SWEEP WINNER</div>
+      <div class="serif" style="font-size:44px;margin-bottom:6px">${winner.name||'Player 1'}</div>
+      <div class="serif" style="font-size:36px;color:#5DCAA5">${ptsStr(winner.score)} pts</div>
+      <div style="margin-top:14px;font-size:12px;color:#555">
+        Captain: ${(()=>{const f=figById(S.captains[winner.idx]);return f?f.flag+' '+f.name:'—';})()}
+      </div>
+    </div>
+
+    ${board.map((row,rank)=>`
+      <div class="podium-row" style="${rank===0?'border-color:var(--purple);background:#100c24':rank===1?'border-color:#3d3d55':''}">
+        <div style="font-size:24px;width:32px;text-align:center">${medals[rank]||rank+1}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px">${row.name||`P${row.idx+1}`}</div>
+          <div class="mono" style="font-size:10px;color:#555;margin-top:3px">
+            Captain: ${(()=>{const f=figById(S.captains[row.idx]);return f?f.flag+' '+f.name:'—';})()}
+          </div>
+          <div class="mono" style="font-size:9px;color:#444;margin-top:3px;line-height:1.8">
+            ${Object.entries(sc[row.idx].byFig).map(([fid,pts])=>{
+              const f=figById(+fid);
+              return f?`${f.flag} ${ptsStr(pts)}`:'';
+            }).filter(Boolean).join(' · ')}
+          </div>
+        </div>
+        <div class="score-pill" style="font-size:24px;color:${ptsColor(row.score)};flex-shrink:0">${ptsStr(row.score)}</div>
+      </div>
+    `).join('')}
+
+    <div style="margin-top:48px;margin-bottom:18px">
+      <div class="mono" style="font-size:9px;letter-spacing:3px;color:var(--purple);margin-bottom:6px">PLAYTEST DEBRIEF</div>
+      <p style="font-size:13px;color:#555;margin-bottom:20px;line-height:1.8">
+        Take 10 minutes as a group. Answer these out loud and write down what felt wrong. This is the most valuable thing you can do right now.
+      </p>
+      ${DEBRIEF_QUESTIONS.map((q,i)=>`<div class="debrief">${i+1}. ${q}</div>`).join('')}
+    </div>
+
+    <div style="text-align:center;margin-top:36px">
+      <button class="btn btn-ghost" id="playAgain" style="font-size:11px;padding:12px 28px">← Play again with different squads</button>
+    </div>
+
+    <div class="mono" style="font-size:9px;color:#2a2a45;text-align:center;margin-top:28px;line-height:2.5;letter-spacing:.5px">
+      POLITIPLAY · MVP PLAYTEST · BUILD THE REAL THING AT POLITIPLAY.NET
+    </div>
+  </div>`;
+}
+
+// ─── BIND ───────────────────────────────────────────────────────
+function bindAll(){
+  document.querySelectorAll('[data-setn]').forEach(el=>{
+    el.onclick = ()=>{ S.numP=+el.dataset.setn; render(); };
+  });
+  document.querySelectorAll('[data-namei]').forEach(el=>{
+    el.oninput = ()=>{ S.names[+el.dataset.namei]=el.value; };
+  });
+  const startBtn = document.getElementById('startBtn');
+  if(startBtn) startBtn.onclick = ()=>{
+    S.names = S.names.slice(0,S.numP).map((n,i)=>n.trim()||`Player ${i+1}`).concat(S.names.slice(S.numP));
+    S.squads = Array(S.numP).fill(0).map(()=>[]);
+    S.captains = Array(S.numP).fill(null);
+    S.draftOrder = snakeOrder(S.numP, SQUAD_SIZE);
+    S.pickIdx = 0; S.revDay = -1; S.posFilter = "All";
+    S.phase = "draft"; render();
+  };
+  document.querySelectorAll('[data-filt]').forEach(el=>{
+    el.onclick = ()=>{ S.posFilter=el.dataset.filt; render(); };
+  });
+  document.querySelectorAll('[data-pickfig]').forEach(el=>{
+    el.onclick = ()=>{
+      const fid=+el.dataset.pickfig, curP=S.draftOrder[S.pickIdx];
+      S.squads[curP].push(fid); S.pickIdx++;
+      if(S.pickIdx>=S.draftOrder.length){ S.capStep=0; S.phase="captain"; }
+      render();
+    };
+  });
+  document.querySelectorAll('[data-setcap]').forEach(el=>{
+    el.onclick = ()=>{
+      S.captains[S.capStep]=+el.dataset.setcap; S.capStep++;
+      if(S.capStep>=S.numP){ S.phase="week"; S.revDay=-1; }
+      render();
+    };
+  });
+  const rev = document.getElementById('revealBtn');
+  if(rev) rev.onclick = ()=>{ S.revDay=Math.min(S.revDay+1,4); render(); };
+  const toRes = document.getElementById('toResults');
+  if(toRes) toRes.onclick = ()=>{ S.phase="results"; render(); };
+  const again = document.getElementById('playAgain');
+  if(again) again.onclick = ()=>{ S.phase="setup"; render(); };
+}
+
+render();
+</script>
+</body>
+</html>
