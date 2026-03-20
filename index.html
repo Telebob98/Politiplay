@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politiplay — Draft world leaders. Score when they make news.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#26215C; --navy2:#1a1740; --navy3:#100e2a;
+  --purple:#7F77DD; --purple-mid:#534AB7; --purple-l:#EEEDFE; --purple-ll:#F5F4FF;
+  --teal:#1D9E75; --teal-l:#E1F5EE;
+  --coral:#D85A30; --coral-l:#FAECE7;
+  --amber:#EF9F27; --amber-l:#FAEEDA;
+  --pink:#D4537E; --pink-l:#FBEAF0;
+  --blue:#378ADD; --blue-l:#E6F1FB;
+  --red:#E24B4A;
+  --ink:#1a1918; --ink2:#3d3c38; --ink3:#7a7870; --ink4:#b5b3ab;
+  --paper:#F7F5EF; --paper2:#EDEBE3; --paper3:#E2DFD5; --white:#fff;
+}
+html { scroll-behavior:smooth; }
+body { font-family:'DM Sans',Helvetica,sans-serif; background:var(--paper); color:var(--ink); line-height:1.6; overflow-x:hidden; }
+
+/* ── NAV ── */
+nav { position:fixed; top:0; left:0; right:0; z-index:200; display:flex; align-items:center; justify-content:space-between; padding:0 36px; height:56px; background:rgba(16,14,42,0.93); backdrop-filter:blur(12px); border-bottom:0.5px solid rgba(127,119,221,0.2); }
+.nav-logo { font-family:'Playfair Display',serif; font-size:20px; color:#fff; letter-spacing:-0.02em; cursor:pointer; user-select:none; }
+.nav-logo span { color:var(--purple); }
+.nav-links { display:flex; gap:28px; list-style:none; }
+.nav-links a { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--purple); }
+.nav-cta { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; background:var(--purple); color:#fff; border:none; padding:8px 18px; border-radius:5px; cursor:pointer; transition:background .2s; }
+.nav-cta:hover { background:var(--purple-mid); }
+
+/* ═══════════════════════════════════
+   BREAKING NEWS BANNER
+═══════════════════════════════════ */
+#news-banner {
+  position:fixed; top:56px; left:0; right:0; z-index:190;
+  background:#8B0000;
+  display:flex; align-items:center; gap:0;
+  height:0; overflow:hidden;
+  transition:height .4s cubic-bezier(.16,1,.3,1);
+  border-bottom:0.5px solid rgba(255,100,100,0.3);
+}
+#news-banner.show { height:40px; }
+.banner-flash {
+  background:#C0392B;
+  font-family:'DM Mono',monospace;
+  font-size:9px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase;
+  color:#fff; padding:0 16px;
+  height:100%; display:flex; align-items:center;
+  white-space:nowrap; flex-shrink:0;
+  animation:flash-pulse 1s ease-in-out infinite;
+}
+@keyframes flash-pulse { 0%,100%{background:#C0392B} 50%{background:#E74C3C} }
+.banner-scroll-wrap { flex:1; overflow:hidden; height:100%; display:flex; align-items:center; }
+.banner-scroll { display:flex; width:max-content; animation:banner-scroll 18s linear infinite; }
+.banner-item { font-family:'DM Mono',monospace; font-size:11px; color:rgba(255,255,255,0.9); padding:0 40px; white-space:nowrap; display:flex; align-items:center; gap:10px; }
+.banner-item a { color:#FFB3B3; text-decoration:none; border-bottom:0.5px solid rgba(255,179,179,0.4); transition:color .2s; }
+.banner-item a:hover { color:#fff; }
+.banner-sep { color:rgba(255,255,255,0.3); }
+@keyframes banner-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.banner-close { background:none; border:none; color:rgba(255,255,255,0.4); font-size:16px; padding:0 16px; cursor:pointer; height:100%; flex-shrink:0; transition:color .2s; }
+.banner-close:hover { color:#fff; }
+
+/* ═══════════════════════════════════
+   BREAKING TOAST (corner)
+═══════════════════════════════════ */
+#breaking-toast {
+  position:fixed; bottom:80px; right:24px; z-index:180;
+  background:var(--navy2); border:0.5px solid rgba(127,119,221,0.35);
+  border-left:3px solid var(--teal);
+  border-radius:10px; padding:14px 16px 12px;
+  width:290px;
+  box-shadow:0 12px 48px rgba(0,0,0,0.5);
+  transform:translateX(330px);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+}
+#breaking-toast.show { transform:translateX(0); pointer-events:auto; }
+.toast-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.toast-eyebrow { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:2px; text-transform:uppercase; color:var(--teal); display:flex; align-items:center; gap:6px; }
+.toast-dot { width:5px; height:5px; background:var(--teal); border-radius:50%; animation:blink 1s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.toast-close { background:none; border:none; color:rgba(175,169,236,0.3); font-size:14px; cursor:pointer; padding:0; line-height:1; }
+.toast-close:hover { color:rgba(175,169,236,0.7); }
+.toast-fig { font-size:14px; font-weight:500; color:#fff; margin-bottom:3px; }
+.toast-desc { font-size:11px; color:rgba(175,169,236,0.6); line-height:1.5; margin-bottom:8px; }
+.toast-bottom { display:flex; align-items:center; justify-content:space-between; }
+.toast-pts { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--teal); }
+.toast-pts.neg { color:#F0997B; }
+.toast-source { font-family:'DM Mono',monospace; font-size:9px; color:rgba(175,169,236,0.3); }
+
+/* ═══════════════════════════════════
+   EASTER EGG MODAL
+═══════════════════════════════════ */
+#egg-overlay {
+  position:fixed; inset:0; z-index:300;
+  background:rgba(10,8,28,0.88);
+  backdrop-filter:blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s;
+}
+#egg-overlay.show { opacity:1; pointer-events:auto; }
+.egg-card {
+  background:var(--navy2); border:0.5px solid rgba(127,119,221,0.4);
+  border-radius:20px; padding:40px 44px;
+  max-width:520px; width:90%;
+  transform:translateY(24px) scale(.97);
+  transition:transform .4s cubic-bezier(.16,1,.3,1);
+  position:relative;
+}
+#egg-overlay.show .egg-card { transform:translateY(0) scale(1); }
+.egg-close { position:absolute; top:18px; right:20px; background:none; border:none; color:rgba(175,169,236,0.3); font-size:18px; cursor:pointer; }
+.egg-close:hover { color:rgba(175,169,236,0.7); }
+.egg-eyebrow { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--pink); margin-bottom:16px; }
+.egg-headline { font-family:'Playfair Display',serif; font-size:30px; color:#fff; line-height:1.15; margin-bottom:16px; letter-spacing:-0.02em; }
+.egg-body { font-size:14px; color:rgba(175,169,236,0.7); line-height:1.75; margin-bottom:24px; }
+.egg-body strong { color:rgba(255,255,255,0.85); font-weight:500; }
+.egg-score-demo { background:rgba(255,255,255,0.04); border:0.5px solid rgba(127,119,221,0.2); border-radius:10px; padding:16px 20px; margin-bottom:24px; }
+.egg-score-row { display:flex; align-items:center; justify-content:space-between; padding:6px 0; border-bottom:0.5px solid rgba(127,119,221,0.1); font-size:13px; }
+.egg-score-row:last-child { border-bottom:none; }
+.egg-score-label { color:rgba(175,169,236,0.6); }
+.egg-score-val { font-family:'DM Mono',monospace; font-weight:500; }
+.egg-dismiss { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; background:rgba(127,119,221,0.15); border:0.5px solid rgba(127,119,221,0.3); color:var(--purple); padding:10px 20px; border-radius:6px; cursor:pointer; transition:all .2s; }
+.egg-dismiss:hover { background:rgba(127,119,221,0.28); }
+
+/* ═══════════════════════════════════
+   HERO
+═══════════════════════════════════ */
+.hero { background:var(--navy3); min-height:100vh; padding:56px 0 0; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+.hero-globe { position:absolute; right:-120px; top:50%; transform:translateY(-50%); width:680px; height:680px; opacity:0.06; pointer-events:none; cursor:pointer; transition:opacity .3s; }
+.hero-globe:hover { opacity:0.12; }
+.hero::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(127,119,221,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(127,119,221,0.04) 1px,transparent 1px); background-size:48px 48px; pointer-events:none; }
+.hero::after { content:''; position:absolute; width:600px; height:600px; background:radial-gradient(circle,rgba(127,119,221,0.12) 0%,transparent 70%); top:-100px; right:-100px; pointer-events:none; }
+.hero-inner { flex:1; max-width:1160px; margin:0 auto; padding:80px 48px 60px; display:grid; grid-template-columns:1fr 420px; gap:60px; align-items:center; position:relative; z-index:1; width:100%; }
+.hero-eyebrow { display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+.eyebrow-dot { width:6px; height:6px; background:var(--teal); border-radius:50%; animation:pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.6;transform:scale(1.4)} }
+.eyebrow-text { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:var(--teal); font-weight:500; }
+.hero-headline { font-family:'Playfair Display',serif; font-size:clamp(40px,5.5vw,68px); color:#fff; line-height:1.05; letter-spacing:-0.02em; margin-bottom:24px; }
+.hero-headline em { font-style:italic; color:var(--purple); }
+.hero-sub { font-size:17px; color:rgba(175,169,236,0.8); line-height:1.7; max-width:480px; margin-bottom:36px; font-weight:300; }
+.hero-actions { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:48px; }
+.btn-primary { font-family:'DM Mono',monospace; font-size:11px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; background:var(--purple); color:#fff; border:none; padding:14px 28px; border-radius:6px; cursor:pointer; transition:background .2s,box-shadow .2s; box-shadow:0 0 32px rgba(127,119,221,0.35); }
+.btn-primary:hover { background:var(--purple-mid); box-shadow:0 0 48px rgba(127,119,221,0.5); }
+.btn-ghost { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; background:transparent; color:rgba(255,255,255,0.45); border:0.5px solid rgba(255,255,255,0.18); padding:14px 24px; border-radius:6px; cursor:pointer; transition:all .2s; }
+.btn-ghost:hover { color:rgba(255,255,255,0.8); border-color:rgba(255,255,255,0.4); }
+.hero-stats { display:flex; gap:36px; }
+.hero-stat-val { font-family:'Playfair Display',serif; font-size:28px; color:#fff; margin-bottom:2px; }
+.hero-stat-lbl { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(175,169,236,0.4); }
+
+/* ═══════════════════════════════════
+   DRAFT PANEL
+═══════════════════════════════════ */
+.draft-panel { background:rgba(255,255,255,0.04); border:0.5px solid rgba(127,119,221,0.25); border-radius:16px; overflow:hidden; backdrop-filter:blur(8px); animation:panel-in .8s cubic-bezier(.16,1,.3,1) both; animation-delay:.3s; }
+@keyframes panel-in { from{opacity:0;transform:translateY(24px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.draft-panel-header { background:rgba(127,119,221,0.12); border-bottom:0.5px solid rgba(127,119,221,0.2); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; }
+.draft-panel-title { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--purple); font-weight:500; }
+.sweep-badge { font-family:'DM Mono',monospace; font-size:9px; background:rgba(29,158,117,0.15); color:#5DCAA5; border:0.5px solid rgba(29,158,117,0.3); padding:3px 8px; border-radius:3px; letter-spacing:1px; }
+.draft-picks { padding:14px 16px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+.draft-slot { background:rgba(255,255,255,0.03); border:0.5px solid rgba(127,119,221,0.12); border-radius:8px; padding:10px 10px 8px; cursor:pointer; transition:all .18s; min-height:105px; }
+.draft-slot:hover:not(.filled) { border-color:rgba(127,119,221,0.4); background:rgba(127,119,221,0.07); }
+.draft-slot.filled { border-color:rgba(127,119,221,0.35); background:rgba(127,119,221,0.08); }
+.draft-slot.empty-slot { display:flex; flex-direction:column; align-items:center; justify-content:center; opacity:.4; }
+.slot-plus { font-size:18px; color:rgba(127,119,221,0.5); margin-bottom:4px; }
+.slot-pos-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:1px; text-transform:uppercase; color:rgba(175,169,236,0.5); }
+.fig-flag { font-size:18px; margin-bottom:3px; }
+.fig-pos-badge { font-family:'DM Mono',monospace; font-size:7px; font-weight:500; letter-spacing:.8px; text-transform:uppercase; padding:1px 5px; border-radius:2px; margin-bottom:4px; display:inline-block; }
+.fig-name { font-size:11px; font-weight:500; color:#fff; line-height:1.2; margin-bottom:3px; }
+.fig-score { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; }
+
+/* ── VOLATILITY METER ── */
+.vol-meter { margin-top:6px; }
+.vol-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:.8px; text-transform:uppercase; color:rgba(175,169,236,0.35); margin-bottom:3px; display:flex; justify-content:space-between; }
+.vol-track { height:3px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; position:relative; }
+.vol-bar { height:100%; border-radius:2px; position:relative; }
+.vol-bar::after { content:''; position:absolute; right:0; top:0; bottom:0; width:3px; border-radius:2px; animation:vol-pulse 1.4s ease-in-out infinite; }
+@keyframes vol-pulse { 0%,100%{opacity:1;transform:scaleX(1)} 50%{opacity:.4;transform:scaleX(1.5)} }
+
+.draft-score-strip { border-top:0.5px solid rgba(127,119,221,0.15); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; }
+.strip-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(175,169,236,0.4); }
+.strip-score { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; transition:color .3s; }
+.draft-pool { border-top:0.5px solid rgba(127,119,221,0.15); padding:12px 16px; display:none; }
+.draft-pool.open { display:block; }
+.pool-title { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(175,169,236,0.4); margin-bottom:8px; }
+.pool-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; max-height:180px; overflow-y:auto; }
+.pool-grid::-webkit-scrollbar{width:3px} .pool-grid::-webkit-scrollbar-thumb{background:rgba(127,119,221,0.3);border-radius:2px}
+.pool-fig { display:flex; align-items:center; gap:6px; padding:6px 8px; background:rgba(255,255,255,0.03); border:0.5px solid rgba(127,119,221,0.1); border-radius:5px; cursor:pointer; transition:all .12s; }
+.pool-fig:hover { border-color:rgba(127,119,221,0.4); background:rgba(127,119,221,0.1); }
+.pool-fig-flag { font-size:14px; flex-shrink:0; }
+.pool-fig-name { font-size:11px; font-weight:500; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pool-fig-pos { font-family:'DM Mono',monospace; font-size:8px; color:rgba(175,169,236,0.45); }
+.pool-fig-vol-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+
+/* ═══════════════════════════════════
+   TICKER
+═══════════════════════════════════ */
+.ticker-wrap { background:var(--navy2); border-top:0.5px solid rgba(127,119,221,0.25); padding:10px 0; overflow:hidden; position:relative; z-index:2; }
+.ticker-inner { display:flex; width:max-content; animation:ticker-scroll 36s linear infinite; }
+.ticker-inner:hover { animation-play-state:paused; }
+@keyframes ticker-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.ticker-item { display:flex; align-items:center; gap:10px; padding:0 28px; white-space:nowrap; font-family:'DM Mono',monospace; font-size:11px; color:rgba(175,169,236,0.55); cursor:default; }
+.ticker-item .name { color:rgba(255,255,255,0.8); font-weight:500; }
+.ticker-pos { color:#5DCAA5; } .ticker-neg { color:#F0997B; }
+.ticker-sep { width:4px; height:4px; border-radius:50%; background:rgba(127,119,221,0.3); }
+.ticker-event { color:rgba(175,169,236,0.4); font-size:10px; }
+.ticker-link { color:rgba(175,169,236,0.45); font-size:9px; text-decoration:none; border-bottom:0.5px solid rgba(175,169,236,0.2); transition:color .2s; letter-spacing:.5px; }
+.ticker-link:hover { color:var(--purple); }
+
+/* ═══════════════════════════════════
+   PAPER ZONE
+═══════════════════════════════════ */
+.paper-zone { background:var(--paper); position:relative; }
+.section-wrap { max-width:1120px; margin:0 auto; padding:0 48px; }
+.section-eyebrow { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--purple); margin-bottom:16px; font-weight:500; }
+.section-heading { font-family:'Playfair Display',serif; font-size:clamp(28px,3.5vw,42px); color:var(--ink); line-height:1.12; letter-spacing:-0.02em; margin-bottom:48px; }
+
+/* ═══════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════ */
+.how-section { padding:80px 0 72px; border-bottom:0.5px solid var(--paper3); }
+.steps { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--paper3); border-radius:14px; overflow:hidden; }
+.step-card { background:var(--paper); padding:32px 28px; }
+.step-num { font-family:'Playfair Display',serif; font-size:56px; color:var(--paper3); line-height:1; margin-bottom:16px; font-weight:700; letter-spacing:-0.03em; }
+.step-title { font-family:'Playfair Display',serif; font-size:20px; color:var(--ink); margin-bottom:8px; }
+.step-body { font-size:13px; color:var(--ink3); line-height:1.7; }
+.step-tag { display:inline-block; margin-top:14px; font-family:'DM Mono',monospace; font-size:9px; font-weight:500; padding:3px 8px; border-radius:3px; letter-spacing:1px; text-transform:uppercase; }
+
+/* ═══════════════════════════════════
+   LIVE FEED
+═══════════════════════════════════ */
+.feed-section { padding:80px 0 72px; border-bottom:0.5px solid var(--paper3); }
+.feed-layout { display:grid; grid-template-columns:1fr 320px; gap:40px; align-items:start; }
+.feed-events { display:flex; flex-direction:column; gap:12px; }
+.feed-event { background:var(--white); border:0.5px solid var(--paper3); border-radius:10px; padding:16px 18px; display:flex; gap:14px; align-items:flex-start; transition:all .18s; opacity:0; transform:translateX(-12px); animation:event-in .5s cubic-bezier(.16,1,.3,1) forwards; }
+.feed-event:hover { border-color:var(--purple); box-shadow:0 0 0 3px rgba(127,119,221,0.08); }
+@keyframes event-in { to{opacity:1;transform:translateX(0)} }
+.event-flag { font-size:24px; flex-shrink:0; }
+.event-body { flex:1; min-width:0; }
+.event-meta { display:flex; align-items:center; gap:8px; margin-bottom:4px; flex-wrap:wrap; }
+.event-fig { font-size:12px; font-weight:500; color:var(--ink); }
+.event-pos-chip { font-family:'DM Mono',monospace; font-size:8px; font-weight:500; letter-spacing:.8px; text-transform:uppercase; padding:1px 5px; border-radius:2px; }
+.event-tier { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.8px; color:var(--ink4); margin-left:auto; }
+.event-desc { font-size:13px; color:var(--ink2); line-height:1.55; margin-bottom:8px; }
+.event-sources { display:flex; flex-wrap:wrap; gap:6px; }
+.source-link { font-family:'DM Mono',monospace; font-size:9px; color:var(--purple); text-decoration:none; background:var(--purple-ll); padding:2px 7px; border-radius:3px; border:0.5px solid rgba(127,119,221,0.2); transition:all .15s; }
+.source-link:hover { background:var(--purple-l); border-color:var(--purple); }
+.source-link.paywalled { color:var(--ink3); background:var(--paper2); border-color:var(--paper3); }
+.source-link.paywalled::after { content:' 🔒'; font-size:8px; }
+.event-pts { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; flex-shrink:0; align-self:center; }
+.pts-pos { color:var(--teal); } .pts-neg { color:var(--coral); }
+
+/* ── FEED VOL INDICATOR ── */
+.event-vol-wrap { display:flex; align-items:center; gap:5px; margin-top:8px; }
+.event-vol-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:.8px; text-transform:uppercase; color:var(--ink4); }
+.event-vol-pips { display:flex; gap:2px; }
+.vol-pip { width:6px; height:6px; border-radius:1px; }
+.vol-pip.active-vhigh { background:var(--red); animation:pip-pulse 1.2s ease-in-out infinite; }
+.vol-pip.active-high { background:var(--amber); }
+.vol-pip.active-med { background:var(--teal); }
+.vol-pip.active-low { background:var(--ink4); }
+.vol-pip.inactive { background:var(--paper3); }
+@keyframes pip-pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* SCOREBOARD */
+.scoreboard-card { background:var(--navy3); border-radius:14px; overflow:hidden; position:sticky; top:72px; }
+.sb-header { background:rgba(127,119,221,0.12); border-bottom:0.5px solid rgba(127,119,221,0.2); padding:14px 18px; display:flex; align-items:center; justify-content:space-between; }
+.sb-title { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:2px; text-transform:uppercase; color:var(--purple); font-weight:500; }
+.sb-week { font-family:'DM Mono',monospace; font-size:9px; color:rgba(175,169,236,0.35); }
+.sb-rows { padding:12px 14px; }
+.sb-row { display:flex; align-items:center; gap:10px; padding:10px; border-radius:6px; margin-bottom:4px; transition:background .15s; }
+.sb-row:hover { background:rgba(127,119,221,0.08); }
+.sb-row.lead { background:rgba(127,119,221,0.12); }
+.sb-rank { font-family:'DM Mono',monospace; font-size:10px; color:rgba(175,169,236,0.3); width:16px; }
+.sb-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; }
+.sb-info { flex:1; }
+.sb-name { font-size:12px; font-weight:500; color:rgba(255,255,255,0.8); }
+.sb-captain { font-family:'DM Mono',monospace; font-size:9px; color:rgba(175,169,236,0.35); }
+.sb-pts { font-family:'DM Mono',monospace; font-size:15px; font-weight:500; }
+.sb-footer { border-top:0.5px solid rgba(127,119,221,0.15); padding:10px 14px; font-family:'DM Mono',monospace; font-size:9px; color:rgba(175,169,236,0.25); letter-spacing:1px; text-align:center; }
+
+/* POSITIONS */
+.positions-section { padding:80px 0 72px; border-bottom:0.5px solid var(--paper3); }
+.pos-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+.pos-card { border-radius:10px; padding:20px 16px; border:0.5px solid; }
+.pos-card-label { font-family:'DM Mono',monospace; font-size:8px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; padding:2px 6px; border-radius:2px; display:inline-block; }
+.pos-card-name { font-family:'Playfair Display',serif; font-size:16px; margin-bottom:6px; }
+.pos-card-slots { font-family:'DM Mono',monospace; font-size:10px; margin-bottom:4px; }
+.pos-card-mult { font-family:'DM Mono',monospace; font-size:18px; font-weight:500; margin-bottom:10px; }
+.pos-card-desc { font-size:11px; line-height:1.6; opacity:.7; }
+
+/* WILDCARDS */
+.wildcard-section { padding:80px 0 72px; background:var(--navy3); }
+.wildcard-section .section-eyebrow { color:var(--pink); }
+.wildcard-section .section-heading { color:#fff; }
+.wc-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.wc-card { background:rgba(255,255,255,0.04); border:0.5px solid rgba(212,83,126,0.2); border-radius:10px; padding:16px; transition:all .18s; position:relative; overflow:hidden; }
+.wc-card:hover { border-color:rgba(212,83,126,0.5); background:rgba(212,83,126,0.06); }
+.wc-flag { font-size:22px; margin-bottom:6px; }
+.wc-name { font-size:13px; font-weight:500; color:rgba(255,255,255,0.85); margin-bottom:2px; }
+.wc-type { font-family:'DM Mono',monospace; font-size:9px; color:rgba(212,83,126,0.6); letter-spacing:.8px; margin-bottom:6px; }
+.wc-note { font-size:11px; color:rgba(175,169,236,0.45); line-height:1.5; }
+
+/* ── WILDCARD VOL METER ── */
+.wc-vol-bar { margin-top:10px; height:2px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
+.wc-vol-fill { height:100%; border-radius:2px; transition:width .4s ease; }
+
+.wc-explainer { margin-top:32px; background:rgba(212,83,126,0.08); border:0.5px solid rgba(212,83,126,0.2); border-radius:10px; padding:20px 24px; display:flex; align-items:center; gap:24px; }
+.wc-mult { font-family:'Playfair Display',serif; font-size:52px; color:var(--pink); line-height:1; flex-shrink:0; letter-spacing:-0.03em; }
+.wc-explainer-text { font-size:14px; color:rgba(175,169,236,0.7); line-height:1.7; }
+.wc-explainer-text strong { color:rgba(255,255,255,0.85); font-weight:500; }
+
+/* EMAIL */
+.email-section { padding:100px 0; text-align:center; }
+.email-sub { font-size:15px; color:var(--ink3); margin-bottom:36px; font-weight:300; }
+.email-form { display:flex; max-width:460px; margin:0 auto 16px; border-radius:8px; overflow:hidden; border:0.5px solid var(--paper3); box-shadow:0 2px 24px rgba(38,33,92,0.1); }
+.email-input { flex:1; border:none; padding:15px 20px; font-family:'DM Sans',sans-serif; font-size:14px; color:var(--ink); background:var(--white); outline:none; }
+.email-input::placeholder { color:var(--ink4); }
+.email-btn { font-family:'DM Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; background:var(--navy); color:#fff; border:none; padding:15px 22px; cursor:pointer; transition:background .2s; white-space:nowrap; }
+.email-btn:hover { background:var(--purple-mid); }
+.email-note { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; color:var(--ink4); text-transform:uppercase; }
+.email-success { display:none; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:1px; color:var(--teal); text-transform:uppercase; margin-top:16px; }
+
+footer { background:var(--navy3); padding:32px 48px; display:flex; align-items:center; justify-content:space-between; border-top:0.5px solid rgba(127,119,221,0.1); }
+.footer-logo { font-family:'Playfair Display',serif; font-size:18px; color:rgba(255,255,255,0.5); }
+.footer-logo span { color:var(--purple); }
+.footer-meta { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; color:rgba(175,169,236,0.2); text-transform:uppercase; }
+.footer-bear { font-family:'DM Mono',monospace; font-size:9px; color:rgba(175,169,236,0.2); font-style:italic; cursor:pointer; transition:color .2s; }
+.footer-bear:hover { color:rgba(175,169,236,0.6); }
+
+.reveal { opacity:0; transform:translateY(20px); transition:opacity .6s ease,transform .6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ── KONAMI FLASH ── */
+#konami-flash { position:fixed; inset:0; z-index:500; background:rgba(127,119,221,0.15); pointer-events:none; opacity:0; transition:opacity .3s; }
+#konami-flash.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<!-- BREAKING NEWS BANNER -->
+<div id="news-banner">
+  <div class="banner-flash">⚡ Breaking</div>
+  <div class="banner-scroll-wrap">
+    <div class="banner-scroll" id="banner-scroll"></div>
+  </div>
+  <button class="banner-close" onclick="dismissBanner()">✕</button>
+</div>
+
+<!-- BREAKING TOAST -->
+<div id="breaking-toast">
+  <div class="toast-top">
+    <div class="toast-eyebrow"><div class="toast-dot"></div>Scoring now</div>
+    <button class="toast-close" onclick="dismissToast()">✕</button>
+  </div>
+  <div class="toast-fig" id="toast-fig"></div>
+  <div class="toast-desc" id="toast-desc"></div>
+  <div class="toast-bottom">
+    <div class="toast-pts" id="toast-pts"></div>
+    <div class="toast-source" id="toast-source"></div>
+  </div>
+</div>
+
+<!-- EASTER EGG MODAL -->
+<div id="egg-overlay" onclick="closeEgg(event)">
+  <div class="egg-card" id="egg-card">
+    <button class="egg-close" onclick="closeEggBtn()">✕</button>
+    <div class="egg-eyebrow" id="egg-eyebrow">Easter egg</div>
+    <div class="egg-headline" id="egg-headline"></div>
+    <div class="egg-body" id="egg-body"></div>
+    <div class="egg-score-demo" id="egg-demo" style="display:none"></div>
+    <button class="egg-dismiss" onclick="closeEggBtn()">Got it</button>
+  </div>
+</div>
+
+<!-- KONAMI FLASH -->
+<div id="konami-flash"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" id="nav-logo" onclick="handleLogoClick()">Politi<span>play</span></div>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#feed">Live feed</a></li>
+    <li><a href="#wildcards">Wildcards</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('email-section').scrollIntoView({behavior:'smooth'})">Get early access</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-globe" id="hero-globe" viewBox="0 0 400 400" fill="none" onclick="globeEasterEgg()" title="🌍">
+    <circle cx="200" cy="200" r="190" stroke="white" stroke-width="1"/>
+    <ellipse cx="200" cy="200" rx="80" ry="190" stroke="white" stroke-width="1"/>
+    <ellipse cx="200" cy="200" rx="150" ry="190" stroke="white" stroke-width="0.5"/>
+    <line x1="10" y1="200" x2="390" y2="200" stroke="white" stroke-width="0.5"/>
+    <line x1="200" y1="10" x2="200" y2="390" stroke="white" stroke-width="0.5"/>
+    <path d="M 20 140 Q 200 110 380 140" stroke="white" stroke-width="0.5" fill="none"/>
+    <path d="M 20 260 Q 200 290 380 260" stroke="white" stroke-width="0.5" fill="none"/>
+    <path d="M 50 100 Q 200 70 350 100" stroke="white" stroke-width="0.5" fill="none"/>
+    <path d="M 50 300 Q 200 330 350 300" stroke="white" stroke-width="0.5" fill="none"/>
+    <!-- Hidden continent dots — only visible on hover -->
+    <circle cx="130" cy="175" r="4" fill="rgba(127,119,221,0)" class="globe-dot" id="globe-dot-1"/>
+    <circle cx="220" cy="160" r="3" fill="rgba(127,119,221,0)" class="globe-dot" id="globe-dot-2"/>
+    <circle cx="280" cy="195" r="4" fill="rgba(127,119,221,0)" class="globe-dot" id="globe-dot-3"/>
+    <circle cx="170" cy="230" r="3" fill="rgba(127,119,221,0)" class="globe-dot" id="globe-dot-4"/>
+    <circle cx="250" cy="240" r="3" fill="rgba(127,119,221,0)" class="globe-dot" id="globe-dot-5"/>
+  </svg>
+
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="eyebrow-dot"></div>
+        <span class="eyebrow-text">Season 1 · Draft opens soon</span>
+      </div>
+      <h1 class="hero-headline">Draft world leaders.<br>Score when they<br><em>make news.</em></h1>
+      <p class="hero-sub">Pick 11 political figures. Score points when they win elections, pass legislation, spark scandals, or reshape the world. Win the Sweep.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="toggleDraftPool()">Try a quick draft →</button>
+        <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works</button>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hero-stat-val">1,000+</div><div class="hero-stat-lbl">Political figures</div></div>
+        <div><div class="hero-stat-val">5</div><div class="hero-stat-lbl">Global regions</div></div>
+        <div><div class="hero-stat-val">11</div><div class="hero-stat-lbl">Picks per squad</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="draft-panel">
+        <div class="draft-panel-header">
+          <span class="draft-panel-title">Your squad · Week 1</span>
+          <span class="sweep-badge">Sweep live</span>
+        </div>
+        <div class="draft-picks" id="draft-picks"></div>
+        <div class="draft-score-strip">
+          <span class="strip-label">Squad total</span>
+          <span class="strip-score" id="squad-score">+0 pts</span>
+        </div>
+        <div class="draft-pool" id="pool-area">
+          <div class="pool-title">Pick a figure</div>
+          <div class="pool-grid" id="pool-grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="ticker-wrap">
+    <div class="ticker-inner" id="ticker-inner"></div>
+  </div>
+</section>
+
+<!-- PAPER ZONE -->
+<div class="paper-zone">
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-wrap">
+    <div class="section-eyebrow reveal">The game</div>
+    <h2 class="section-heading reveal">Three steps. Every week.</h2>
+    <div class="steps reveal">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Draft your team</div>
+        <p class="step-body">Pick 11 world leaders, legislators, and chaos agents. Assign a Captain for 2× points. Lock your lineup Monday morning.</p>
+        <span class="step-tag" style="background:#F5F4FF;color:var(--purple-mid);">Snake draft</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">They make news</div>
+        <p class="step-body">Election wins, policy breakthroughs, scandals, resignations. Real events score real points — automatically, with source links on every scored event.</p>
+        <span class="step-tag" style="background:var(--teal-l);color:#0F6E56;">Live scoring</span>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Win the Sweep</div>
+        <p class="step-body">Most points wins the week. Sunday results drop with a shareable card. Use the waiver wire to reshuffle before next Monday.</p>
+        <span class="step-tag" style="background:var(--amber-l);color:#854F0B;">Sunday glory</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE FEED -->
+<section class="feed-section" id="feed">
+  <div class="section-wrap">
+    <div class="section-eyebrow reveal">Scoring feed</div>
+    <h2 class="section-heading reveal">Real news. Real points.<br>Every source linked.</h2>
+    <div class="feed-layout">
+      <div class="feed-events" id="feed-events"></div>
+      <div class="scoreboard-card">
+        <div class="sb-header">
+          <span class="sb-title">Week 1 · Standings</span>
+          <span class="sb-week">Mon–Sun</span>
+        </div>
+        <div class="sb-rows">
+          <div class="sb-row lead">
+            <div class="sb-rank">1</div>
+            <div class="sb-avatar" style="background:rgba(127,119,221,0.2);color:#AFA9EC;">JM</div>
+            <div class="sb-info"><div class="sb-name">Jordan M.</div><div class="sb-captain">⭐ Zelensky</div></div>
+            <div class="sb-pts" style="color:#5DCAA5;">+87</div>
+          </div>
+          <div class="sb-row">
+            <div class="sb-rank">2</div>
+            <div class="sb-avatar" style="background:rgba(29,158,117,0.15);color:#5DCAA5;">AT</div>
+            <div class="sb-info"><div class="sb-name">Aisha T.</div><div class="sb-captain">⭐ AOC</div></div>
+            <div class="sb-pts" style="color:rgba(175,169,236,0.4);">+72</div>
+          </div>
+          <div class="sb-row">
+            <div class="sb-rank">3</div>
+            <div class="sb-avatar" style="background:rgba(239,159,39,0.15);color:#EF9F27;">PR</div>
+            <div class="sb-info"><div class="sb-name">Pablo R.</div><div class="sb-captain">⭐ Macron</div></div>
+            <div class="sb-pts" style="color:rgba(175,169,236,0.4);">+61</div>
+          </div>
+          <div class="sb-row">
+            <div class="sb-rank">4</div>
+            <div class="sb-avatar" style="background:rgba(212,83,126,0.15);color:#D4537E;">SK</div>
+            <div class="sb-info"><div class="sb-name">Sam K.</div><div class="sb-captain">⭐ Musk</div></div>
+            <div class="sb-pts" style="color:rgba(175,169,236,0.4);">+44</div>
+          </div>
+        </div>
+        <div class="sb-footer">3 days remaining · waiver wire open</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIONS -->
+<section class="positions-section reveal">
+  <div class="section-wrap">
+    <div class="section-eyebrow">The squad</div>
+    <h2 class="section-heading">11 slots. No bench.<br>Every pick counts.</h2>
+    <div class="pos-grid">
+      <div class="pos-card" style="background:#F5F4FF;border-color:#CECBF6;">
+        <span class="pos-card-label" style="background:#EEEDFE;color:#534AB7;">HoS</span>
+        <div class="pos-card-name" style="color:#26215C;">Head of State</div>
+        <div class="pos-card-slots" style="color:#7F77DD;">2 slots</div>
+        <div class="pos-card-mult" style="color:#534AB7;">1×</div>
+        <div class="pos-card-desc" style="color:#534AB7;">Presidents, PMs, monarchs. Your foundation.</div>
+      </div>
+      <div class="pos-card" style="background:#E8F8F2;border-color:#9FE1CB;">
+        <span class="pos-card-label" style="background:#E1F5EE;color:#085041;">LEG</span>
+        <div class="pos-card-name" style="color:#04342C;">Legislator</div>
+        <div class="pos-card-slots" style="color:#1D9E75;">2 slots</div>
+        <div class="pos-card-mult" style="color:#0F6E56;">1×</div>
+        <div class="pos-card-desc" style="color:#0F6E56;">Senators, MPs, ministers. Floor action.</div>
+      </div>
+      <div class="pos-card" style="background:#EBF4FD;border-color:#B5D4F4;">
+        <span class="pos-card-label" style="background:#E6F1FB;color:#0C447C;">OPP</span>
+        <div class="pos-card-name" style="color:#042C53;">Opposition</div>
+        <div class="pos-card-slots" style="color:#378ADD;">2 slots</div>
+        <div class="pos-card-mult" style="color:#185FA5;">1×</div>
+        <div class="pos-card-desc" style="color:#185FA5;">Challengers and critics. Scores on chaos.</div>
+      </div>
+      <div class="pos-card" style="background:#FDF0EB;border-color:#F5C4B3;">
+        <span class="pos-card-label" style="background:#FAECE7;color:#712B13;">WBR</span>
+        <div class="pos-card-name" style="color:#4A1B0C;">World Body</div>
+        <div class="pos-card-slots" style="color:#D85A30;">1 slot</div>
+        <div class="pos-card-mult" style="color:#993C1D;">1×+</div>
+        <div class="pos-card-desc" style="color:#993C1D;">UN, EU, NATO. Multilateral bonus.</div>
+      </div>
+      <div class="pos-card" style="background:#FEF0F5;border-color:#F4C0D1;">
+        <span class="pos-card-label" style="background:#FBEAF0;color:#72243E;">WLD</span>
+        <div class="pos-card-name" style="color:#4B1528;">Wildcard</div>
+        <div class="pos-card-slots" style="color:#D4537E;">2 slots</div>
+        <div class="pos-card-mult" style="color:#993556;">1.5×</div>
+        <div class="pos-card-desc" style="color:#993556;">Chaos agents. High risk. High ceiling.</div>
+      </div>
+    </div>
+    <div style="margin-top:24px;padding:20px 24px;background:var(--navy3);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;">Captain = 2× multiplier on any slot.</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(175,169,236,0.5);letter-spacing:1px;">Choose wisely. Locked on Monday.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /paper-zone -->
+
+<!-- WILDCARDS -->
+<section class="wildcard-section" id="wildcards">
+  <div class="section-wrap">
+    <div class="section-eyebrow">Wildcards</div>
+    <h2 class="section-heading" style="margin-bottom:32px;">The chaos agents.<br><em style="color:var(--pink)">1.5× everything.</em></h2>
+    <div class="wc-grid" id="wc-grid"></div>
+    <div class="wc-explainer" style="margin-top:24px;">
+      <div class="wc-mult">1.5×</div>
+      <div class="wc-explainer-text">
+        Wildcards are <strong>political kibbitzers</strong> — figures not in official positions who muscle their way into the news cycle anyway. Former leaders, tech oligarchs, activists, fired officials who won't stay quiet. <strong>High risk. Very high reward.</strong> The pool of ~60 figures is editorially curated and refreshed every week.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EMAIL -->
+<div class="paper-zone">
+  <section class="email-section" id="email-section">
+    <div class="section-wrap">
+      <div class="section-eyebrow" style="text-align:center;">Early access</div>
+      <h2 class="section-heading" style="text-align:center;">Be first on the board.</h2>
+      <p class="email-sub">Season 1 draft opens soon. Get notified the moment it does.</p>
+      <form class="email-form" id="waitlist-form" name="waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+        <input type="hidden" name="form-name" value="waitlist">
+        <input type="hidden" name="bot-field" style="display:none">
+        <input class="email-input" id="email-input" type="email" name="email" placeholder="your@email.com" required autocomplete="email">
+        <button class="email-btn" type="submit" id="submit-btn">Notify me</button>
+      </form>
+      <div class="email-note" id="email-note">No spam. No newsletters. Just the draft alert.</div>
+      <div class="email-success" id="email-success">✓ You're on the list. See you at the draft.</div>
+      <div class="email-error" id="email-error" style="display:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;color:#F0997B;text-transform:uppercase;margin-top:16px;">Something went wrong — try again.</div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-logo">Politi<span>play</span>.net</div>
+  <div class="footer-meta">politiplay.net · v1.5 · March 2026</div>
+  <div class="footer-bear" onclick="bearEasterEgg()" title="🧸">The teddy bear is real.</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════
+const VOL = {
+  vhigh: { label:"V.High", pips:4, color:"#E24B4A", barColor:"#E24B4A", barW:"92%" },
+  high:  { label:"High",   pips:3, color:"#EF9F27", barColor:"#EF9F27", barW:"68%" },
+  med:   { label:"Med",    pips:2, color:"#1D9E75", barColor:"#1D9E75", barW:"44%" },
+  low:   { label:"Low",    pips:1, color:"#888780", barColor:"#888780", barW:"22%" },
+};
+
+const FIGURES = [
+  {id:1,  name:"Zelensky",   flag:"🇺🇦", pos:"HoS",  posColor:"#534AB7", posBg:"#EEEDFE", vol:"high",  pts:+24},
+  {id:2,  name:"AOC",        flag:"🇺🇸", pos:"LEG",  posColor:"#085041", posBg:"#E1F5EE", vol:"high",  pts:+17},
+  {id:3,  name:"Trump",      flag:"🇺🇸", pos:"HoS",  posColor:"#534AB7", posBg:"#EEEDFE", vol:"vhigh", pts:+31},
+  {id:4,  name:"Macron",     flag:"🇫🇷", pos:"HoS",  posColor:"#534AB7", posBg:"#EEEDFE", vol:"med",   pts:+11},
+  {id:5,  name:"Sanders",    flag:"🇺🇸", pos:"LEG",  posColor:"#085041", posBg:"#E1F5EE", vol:"med",   pts:+9},
+  {id:6,  name:"Lagarde",    flag:"🇪🇺", pos:"WBR",  posColor:"#712B13", posBg:"#FAECE7", vol:"low",   pts:+7},
+  {id:7,  name:"Musk",       flag:"🇺🇸", pos:"WLD",  posColor:"#72243E", posBg:"#FBEAF0", vol:"vhigh", pts:+28},
+  {id:8,  name:"Whitmer",    flag:"🇺🇸", pos:"HoS",  posColor:"#534AB7", posBg:"#EEEDFE", vol:"med",   pts:+8},
+  {id:9,  name:"Modi",       flag:"🇮🇳", pos:"HoS",  posColor:"#534AB7", posBg:"#EEEDFE", vol:"med",   pts:+12},
+  {id:10, name:"Farage",     flag:"🇬🇧", pos:"WLD",  posColor:"#72243E", posBg:"#FBEAF0", vol:"high",  pts:+19},
+  {id:11, name:"Schumer",    flag:"🇺🇸", pos:"LEG",  posColor:"#085041", posBg:"#E1F5EE", vol:"low",   pts:+5},
+  {id:12, name:"Von der L.", flag:"🇪🇺", pos:"WBR",  posColor:"#712B13", posBg:"#FAECE7", vol:"med",   pts:+9},
+];
+
+const FEED_EVENTS = [
+  {
+    flag:"🇺🇦", fig:"Zelensky", pos:"HoS", posBg:"#EEEDFE", posColor:"#534AB7",
+    tier:"Tier 1", vol:"high",
+    desc:"Addressed the UN Security Council on ceasefire talks, receiving a standing ovation from 12 member states.",
+    sources:[
+      {label:"AP Wire", url:"https://apnews.com", paywalled:false},
+      {label:"Reuters", url:"https://reuters.com", paywalled:false},
+      {label:"NYT", url:"https://nytimes.com", paywalled:true},
+    ],
+    pts:+18, sign:1
+  },
+  {
+    flag:"🇺🇸", fig:"AOC", pos:"LEG", posBg:"#E1F5EE", posColor:"#085041",
+    tier:"Tier 2", vol:"high",
+    desc:"Viral floor speech on housing bill amassed 4.2M views within 6 hours. Trending nationally.",
+    sources:[
+      {label:"C-SPAN", url:"https://c-span.org", paywalled:false},
+      {label:"Politico", url:"https://politico.com", paywalled:false},
+    ],
+    pts:+14, sign:1
+  },
+  {
+    flag:"🇫🇷", fig:"Macron", pos:"HoS", posBg:"#EEEDFE", posColor:"#534AB7",
+    tier:"Tier 2", vol:"med",
+    desc:"National approval drops 4 points following pension reform failure. Opposition tables no confidence vote.",
+    sources:[
+      {label:"YouGov France", url:"https://yougov.co.uk", paywalled:false},
+      {label:"Le Monde", url:"https://lemonde.fr", paywalled:true},
+      {label:"The Guardian", url:"https://theguardian.com", paywalled:false},
+    ],
+    pts:-12, sign:-1
+  },
+  {
+    flag:"🇺🇸", fig:"Musk", pos:"WLD", posBg:"#FBEAF0", posColor:"#72243E",
+    tier:"Tier 3", vol:"vhigh",
+    desc:"DOGE cost-cutting memo leaked. Congressional hearing called. Coverage volume triggers Tier 3 wildcard bonus.",
+    sources:[
+      {label:"Bloomberg", url:"https://bloomberg.com", paywalled:true},
+      {label:"Reuters", url:"https://reuters.com", paywalled:false},
+      {label:"NYT", url:"https://nytimes.com", paywalled:true},
+    ],
+    pts:+22, sign:1
+  },
+  {
+    flag:"🇬🇧", fig:"Farage", pos:"WLD", posBg:"#FBEAF0", posColor:"#72243E",
+    tier:"Tier 2", vol:"high",
+    desc:"Addressed Reform UK conference, polling at 18% nationally. Dominated media cycle for 48 hours.",
+    sources:[
+      {label:"Hansard", url:"https://hansard.parliament.uk", paywalled:false},
+      {label:"The Guardian", url:"https://theguardian.com", paywalled:false},
+    ],
+    pts:+16, sign:1
+  },
+];
+
+const WILDCARDS = [
+  {flag:"🇺🇸", name:"Elon Musk",      type:"Tech billionaire",   note:"In and out of the news cycle daily. Massive ceiling, volatile floor.", vol:"vhigh"},
+  {flag:"🇺🇸", name:"Steve Bannon",   type:"Disgraced official", note:"The martyrdom problem. Prison = penalty + viral bonus.", vol:"high", hasEgg:true},
+  {flag:"🇬🇧", name:"Nigel Farage",   type:"Rogue candidate",    note:"Ex-leaders who won't stay quiet score at 1.5× for a reason.", vol:"high"},
+  {flag:"🇺🇸", name:"Greta Thunberg", type:"Activist leader",    note:"Movement moments are scoreable. Arrests, speeches, viral moments.", vol:"med"},
+];
+
+const TICKER_ITEMS = [
+  {name:"Zelensky", flag:"🇺🇦", event:"UN Security Council address", pts:"+18", pos:true,  url:"https://apnews.com"},
+  {name:"Macron",   flag:"🇫🇷", event:"Approval −4pts",              pts:"−12", pos:false, url:"https://theguardian.com"},
+  {name:"AOC",      flag:"🇺🇸", event:"Floor speech viral 4.2M",     pts:"+14", pos:true,  url:"https://c-span.org"},
+  {name:"Musk",     flag:"🇺🇸", event:"DOGE memo leaked · Tier 3",   pts:"+22", pos:true,  url:"https://reuters.com"},
+  {name:"Farage",   flag:"🇬🇧", event:"Reform UK conference",        pts:"+16", pos:true,  url:"https://theguardian.com"},
+  {name:"Sanders",  flag:"🇺🇸", event:"Budget hawk floor action",    pts:"+9",  pos:true,  url:"https://c-span.org"},
+  {name:"Lagarde",  flag:"🇪🇺", event:"ECB rate decision",           pts:"+7",  pos:true,  url:"https://reuters.com"},
+  {name:"Modi",     flag:"🇮🇳", event:"Trade agreement signed",      pts:"+12", pos:true,  url:"https://apnews.com"},
+];
+
+const BREAKING_EVENTS = [
+  {fig:"Zelensky 🇺🇦", desc:"Bilateral security agreement signed with France.", pts:"+24", neg:false, source:"AP"},
+  {fig:"Trump 🇺🇸",    desc:"Executive order on tariffs triggers Tier 3 scoring.", pts:"+31", neg:false, source:"Reuters"},
+  {fig:"Macron 🇫🇷",   desc:"Cabinet reshuffle — new PM announced.", pts:"+15", neg:false, source:"Le Monde"},
+  {fig:"Musk 🇺🇸",     desc:"Senate hearing subpoena issued. Wildcard chaos bonus fires.", pts:"+19", neg:false, source:"Bloomberg"},
+  {fig:"Farage 🇬🇧",   desc:"Reform UK tops YouGov poll for the first time.", pts:"+18", neg:false, source:"YouGov"},
+  {fig:"AOC 🇺🇸",      desc:"Budget amendment passes 218–214. Floor drama scored.", pts:"+14", neg:false, source:"C-SPAN"},
+];
+
+const BANNER_STORIES = [
+  {text:"Zelensky addresses UN Security Council — ceasefire framework tabled", url:"https://apnews.com"},
+  {text:"DOGE memo leaked — Congressional hearing called for next week", url:"https://reuters.com"},
+  {text:"Farage polling at 18% nationally — Reform UK surges in YouGov", url:"https://theguardian.com"},
+  {text:"ECB holds rates — Lagarde press conference in progress", url:"https://reuters.com"},
+  {text:"AOC housing floor speech — 4.2M views in 6 hours", url:"https://c-span.org"},
+  {text:"Modi signs bilateral trade deal with Japan", url:"https://apnews.com"},
+];
+
+// ══════════════════════════════════════════
+// VOLATILITY HELPERS
+// ══════════════════════════════════════════
+function volPips(volKey) {
+  const v = VOL[volKey];
+  const total = 4;
+  let html = '';
+  for (let i = 0; i < total; i++) {
+    if (i < v.pips) {
+      html += `<div class="vol-pip active-${volKey}"></div>`;
+    } else {
+      html += `<div class="vol-pip inactive"></div>`;
+    }
+  }
+  return html;
+}
+
+function volMeter(volKey) {
+  const v = VOL[volKey];
+  return `<div class="vol-meter">
+    <div class="vol-label"><span>vol</span><span style="color:${v.color}">${v.label}</span></div>
+    <div class="vol-track">
+      <div class="vol-bar" style="width:${v.barW};background:${v.barColor};"></div>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// DRAFT PANEL
+// ══════════════════════════════════════════
+let squad = [null, null, null];
+let openSlot = null;
+const SLOT_DEFS = [{pos:"HoS"},{pos:"WLD"},{pos:"LEG"}];
+
+function renderDraftPanel() {
+  const container = document.getElementById('draft-picks');
+  container.innerHTML = SLOT_DEFS.map((def, i) => {
+    const fig = squad[i];
+    if (fig) {
+      const v = VOL[fig.vol];
+      const ptsColor = fig.pts >= 0 ? '#5DCAA5' : '#F0997B';
+      return `<div class="draft-slot filled" onclick="openSlotPicker(${i})">
+        <div class="fig-flag">${fig.flag}</div>
+        <div class="fig-pos-badge" style="background:${fig.posBg};color:${fig.posColor};">${fig.pos}</div>
+        <div class="fig-name">${fig.name}</div>
+        <div class="fig-score" style="color:${ptsColor};">${fig.pts>=0?'+':''}${fig.pts}</div>
+        <div class="vol-meter" style="margin-top:5px;">
+          <div class="vol-label" style="display:flex;justify-content:space-between;">
+            <span style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.8px;text-transform:uppercase;color:rgba(175,169,236,0.35);">vol</span>
+            <span style="font-family:'DM Mono',monospace;font-size:7px;color:${v.color};">${v.label}</span>
+          </div>
+          <div class="vol-track"><div class="vol-bar" style="width:${v.barW};background:${v.barColor};"></div></div>
+        </div>
+      </div>`;
+    } else {
+      return `<div class="draft-slot empty-slot" onclick="openSlotPicker(${i})">
+        <div class="slot-plus">+</div>
+        <div class="slot-pos-label">${def.pos}</div>
+      </div>`;
+    }
+  }).join('');
+
+  const total = squad.reduce((s,f) => s + (f ? f.pts : 0), 0);
+  const el = document.getElementById('squad-score');
+  el.textContent = (total>=0?'+':'') + total + ' pts';
+  el.style.color = total>=0 ? '#5DCAA5' : '#F0997B';
+}
+
+function openSlotPicker(i) {
+  openSlot = i;
+  document.getElementById('pool-area').classList.add('open');
+  renderPool();
+}
+
+function toggleDraftPool() {
+  openSlot = 0;
+  const pool = document.getElementById('pool-area');
+  pool.classList.toggle('open');
+  if (pool.classList.contains('open')) renderPool();
+}
+
+function renderPool() {
+  const taken = squad.filter(Boolean).map(f=>f.id);
+  const available = FIGURES.filter(f=>!taken.includes(f.id));
+  document.getElementById('pool-grid').innerHTML = available.map(f => {
+    const v = VOL[f.vol];
+    return `<div class="pool-fig" onclick="pickFigure(${f.id})">
+      <div class="pool-fig-flag">${f.flag}</div>
+      <div class="pool-fig-info" style="flex:1;min-width:0;">
+        <div class="pool-fig-name">${f.name}</div>
+        <div class="pool-fig-pos">${f.pos} · ${f.pts>=0?'+':''}${f.pts} pts</div>
+      </div>
+      <div class="pool-fig-vol-dot" style="background:${v.color};"></div>
+    </div>`;
+  }).join('');
+}
+
+function pickFigure(figId) {
+  const fig = FIGURES.find(f=>f.id===figId);
+  if (openSlot !== null && fig) {
+    squad[openSlot] = fig;
+    openSlot = null;
+    document.getElementById('pool-area').classList.remove('open');
+  }
+  renderDraftPanel();
+}
+
+// ══════════════════════════════════════════
+// TICKER
+// ══════════════════════════════════════════
+function buildTicker() {
+  const items = [...TICKER_ITEMS, ...TICKER_ITEMS];
+  document.getElementById('ticker-inner').innerHTML = items.map(t => `
+    <div class="ticker-item">
+      <span>${t.flag}</span>
+      <span class="name">${t.name}</span>
+      <span class="ticker-sep"></span>
+      <span class="ticker-event">${t.event}</span>
+      <span class="${t.pos?'ticker-pos':'ticker-neg'}">${t.pts}</span>
+      <a class="ticker-link" href="${t.url}" target="_blank" rel="noopener">src ↗</a>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// FEED
+// ══════════════════════════════════════════
+function buildFeed() {
+  document.getElementById('feed-events').innerHTML = FEED_EVENTS.map((e, i) => {
+    const delay = i * 120;
+    const ptsColor = e.sign >= 0 ? '#1D9E75' : '#D85A30';
+    const ptsText = (e.sign>=0?'+':'') + e.pts;
+    const v = VOL[e.vol];
+    const sourceLinks = e.sources.map(s =>
+      `<a class="source-link${s.paywalled?' paywalled':''}" href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`
+    ).join('');
+    return `<div class="feed-event" style="animation-delay:${delay}ms;">
+      <div class="event-flag">${e.flag}</div>
+      <div class="event-body">
+        <div class="event-meta">
+          <span class="event-fig">${e.fig}</span>
+          <span class="event-pos-chip" style="background:${e.posBg};color:${e.posColor};">${e.pos}</span>
+          <span class="event-tier">${e.tier}</span>
+        </div>
+        <div class="event-desc">${e.desc}</div>
+        <div class="event-sources">${sourceLinks}</div>
+        <div class="event-vol-wrap">
+          <span class="event-vol-label">Volatility</span>
+          <div class="event-vol-pips">${volPips(e.vol)}</div>
+        </div>
+      </div>
+      <div class="event-pts" style="color:${ptsColor};">${ptsText}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// WILDCARDS
+// ══════════════════════════════════════════
+function buildWildcards() {
+  document.getElementById('wc-grid').innerHTML = WILDCARDS.map(w => {
+    const v = VOL[w.vol];
+    const bannonNote = w.hasEgg
+      ? `<div style="margin-top:8px;font-family:'DM Mono',monospace;font-size:8px;color:rgba(212,83,126,0.5);letter-spacing:.8px;cursor:pointer;text-decoration:underline dotted;" onclick="bannonEasterEgg()">The martyrdom rule ↗</div>`
+      : '';
+    return `<div class="wc-card">
+      <div class="wc-flag">${w.flag}</div>
+      <div class="wc-name">${w.name}</div>
+      <div class="wc-type">${w.type}</div>
+      <div class="wc-note">${w.note}</div>
+      ${bannonNote}
+      <div class="wc-vol-bar"><div class="wc-vol-fill" style="width:${v.barW};background:${v.color};"></div></div>
+      <div style="font-family:'DM Mono',monospace;font-size:7px;color:${v.color};letter-spacing:.8px;text-transform:uppercase;margin-top:4px;">${v.label} volatility</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// BREAKING NEWS BANNER
+// ══════════════════════════════════════════
+function buildBanner() {
+  const stories = [...BANNER_STORIES, ...BANNER_STORIES];
+  document.getElementById('banner-scroll').innerHTML = stories.map(s =>
+    `<div class="banner-item">
+      <span>${s.text}</span>
+      <span class="banner-sep">·</span>
+      <a href="${s.url}" target="_blank" rel="noopener">Read ↗</a>
+    </div>`
+  ).join('');
+}
+function showBanner() {
+  buildBanner();
+  document.getElementById('news-banner').classList.add('show');
+  // offset hero content so it doesn't hide behind the banner+nav
+  document.querySelector('.hero').style.paddingTop = '96px';
+}
+function dismissBanner() {
+  document.getElementById('news-banner').classList.remove('show');
+  document.querySelector('.hero').style.paddingTop = '56px';
+}
+
+// ══════════════════════════════════════════
+// BREAKING TOAST
+// ══════════════════════════════════════════
+let toastQueue = [...BREAKING_EVENTS];
+let toastTimer = null;
+
+function showNextToast() {
+  if (!toastQueue.length) toastQueue = [...BREAKING_EVENTS];
+  const e = toastQueue.splice(Math.floor(Math.random()*toastQueue.length), 1)[0];
+  document.getElementById('toast-fig').textContent = e.fig;
+  document.getElementById('toast-desc').textContent = e.desc;
+  const ptsEl = document.getElementById('toast-pts');
+  ptsEl.textContent = e.pts;
+  ptsEl.className = 'toast-pts' + (e.neg ? ' neg' : '');
+  document.getElementById('toast-source').textContent = 'via ' + e.source;
+  const toast = document.getElementById('breaking-toast');
+  toast.classList.add('show');
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 5500);
+}
+function dismissToast() {
+  clearTimeout(toastTimer);
+  document.getElementById('breaking-toast').classList.remove('show');
+  toastTimer = setTimeout(showNextToast, 9000);
+}
+
+// ══════════════════════════════════════════
+// EASTER EGGS
+// ══════════════════════════════════════════
+const EGGS = {
+  globe: {
+    eyebrow:"🌍 Globe unlocked",
+    headline:"The whole world is on the board.",
+    body:`Politiplay covers <strong>5 regions</strong> at launch: USA, EU+UK, Asia, Latin America, and Global. Every figure in the system is a real, scoreable political actor — verified role, current position, active news presence.<br><br>Middle East and Russia are <strong>parked for Season 2</strong>. Data reliability and state propaganda make fair scoring impossible at launch. We'd rather launch clean than launch broken.`,
+    demo: null,
+  },
+  bannon: {
+    eyebrow:"⚖️ The Bannon Rule",
+    headline:"Does going to prison help your Wildcard?",
+    body:`It's the hardest editorial question in the game. Conviction = removal from board (bad). But martyrdom coverage = coverage volume bonus (good). After <strong>extensive deliberation</strong>, here's how it resolves:`,
+    demo: [
+      {label:"Criminal conviction / sentencing", val:"−25 pts", color:"#F0997B"},
+      {label:"Tier 3 viral/controversy bonus", val:"+14 pts", color:"#5DCAA5"},
+      {label:"Media cycle dominance (48h+)", val:"+8 pts", color:"#5DCAA5"},
+      {label:"Net result", val:"−3 pts", color:"rgba(175,169,236,0.6)"},
+      {label:"Verdict", val:"Negative — but not catastrophic.", color:"#AFA9EC"},
+    ],
+  },
+  bear: {
+    eyebrow:"🧸 The Teddy Bear",
+    headline:"The Sweep winner gets a teddy bear.",
+    body:`Every Sunday, the Sweep winner receives a <strong>ceremonial Politiplay teddy bear</strong>. Not a digital badge. An actual physical bear, mailed to them.<br><br>It's absurd. It's the point. Politics is the most consequential game on earth, and winning a fantasy league about it should feel like something. The bear is that something.`,
+    demo: null,
+  },
+  konami: {
+    eyebrow:"↑↑↓↓←→←→",
+    headline:"You found it.",
+    body:`The Konami code works on this page because of course it does. <strong>Every Politiplay season has a hidden easter egg.</strong> Some are in the scoring feed. Some are in the player cards. Some are in the waiver wire.<br><br>The first person to find all of them gets their name in the Season 1 release notes. That's the prize. The bragging rights are real.`,
+    demo: null,
+  },
+  logo: {
+    eyebrow:"🎯 Logo unlock",
+    headline:"You clicked the logo three times.",
+    body:`That's dedication. Here's a reward: the name <strong>Politiplay</strong> was almost <em>PolitiDraft</em>. Then almost <em>Newsleague</em>. Then almost <em>The Sweep</em> (still used internally for the weekly contest).<br><br>Politiplay won because it's the only name that sounds like something you'd say at a party. "Want to play Politiplay?" Yes. Always yes.`,
+    demo: null,
+  },
+};
+
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function handleLogoClick() {
+  logoClickCount++;
+  clearTimeout(logoClickTimer);
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 800);
+  if (logoClickCount >= 3) {
+    logoClickCount = 0;
+    showEgg('logo');
+  }
+}
+
+function globeEasterEgg() { showEgg('globe'); }
+function bannonEasterEgg() { showEgg('bannon'); }
+function bearEasterEgg() { showEgg('bear'); }
+
+function showEgg(key) {
+  const egg = EGGS[key];
+  document.getElementById('egg-eyebrow').textContent = egg.eyebrow;
+  document.getElementById('egg-headline').innerHTML = egg.headline;
+  document.getElementById('egg-body').innerHTML = egg.body.replace(/\n/g,'<br>');
+  const demoEl = document.getElementById('egg-demo');
+  if (egg.demo) {
+    demoEl.style.display = 'block';
+    demoEl.innerHTML = egg.demo.map(r =>
+      `<div class="egg-score-row">
+        <span class="egg-score-label">${r.label}</span>
+        <span class="egg-score-val" style="color:${r.color};">${r.val}</span>
+      </div>`
+    ).join('');
+  } else {
+    demoEl.style.display = 'none';
+  }
+  document.getElementById('egg-overlay').classList.add('show');
+}
+
+function closeEgg(e) {
+  if (e.target === document.getElementById('egg-overlay')) closeEggBtn();
+}
+function closeEggBtn() {
+  document.getElementById('egg-overlay').classList.remove('show');
+}
+
+// Konami code
+const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let konamiIdx = 0;
+document.addEventListener('keydown', (e) => {
+  if (e.key === KONAMI[konamiIdx]) {
+    konamiIdx++;
+    if (konamiIdx === KONAMI.length) {
+      konamiIdx = 0;
+      // Flash the screen then show egg
+      const flash = document.getElementById('konami-flash');
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 400);
+      setTimeout(() => showEgg('konami'), 350);
+    }
+  } else {
+    konamiIdx = 0;
+  }
+});
+
+// ══════════════════════════════════════════
+// EMAIL — Netlify Forms
+// ══════════════════════════════════════════
+async function handleSubmit(e) {
+  e.preventDefault();
+  const form    = document.getElementById('waitlist-form');
+  const btn     = document.getElementById('submit-btn');
+  const note    = document.getElementById('email-note');
+  const success = document.getElementById('email-success');
+  const error   = document.getElementById('email-error');
+
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(form)).toString(),
+    });
+    if (res.ok) {
+      form.style.display    = 'none';
+      note.style.display    = 'none';
+      error.style.display   = 'none';
+      success.style.display = 'block';
+    } else {
+      throw new Error('bad response');
+    }
+  } catch (err) {
+    btn.textContent = 'Notify me';
+    btn.disabled    = false;
+    error.style.display = 'block';
+  }
+}
+
+// ══════════════════════════════════════════
+// SCROLL REVEALS
+// ══════════════════════════════════════════
+function initReveal() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) { el.target.classList.add('visible'); obs.unobserve(el.target); }
+    });
+  }, { threshold:0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderDraftPanel();
+buildTicker();
+buildFeed();
+buildWildcards();
+
+// Banner fires after 2s
+setTimeout(showBanner, 2000);
+
+// First toast after 6s, then every 12s
+setTimeout(() => {
+  showNextToast();
+  setInterval(() => { if (!document.getElementById('breaking-toast').classList.contains('show')) showNextToast(); }, 12000);
+}, 6000);
+
+initReveal();
+</script>
+</body>
+</html>
